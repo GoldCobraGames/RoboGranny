@@ -102,8 +102,6 @@ function level0()
     obj.active.push(movingPlatform(380,800,2,17,380,950));
     obj.active.push(slime(380, 518));
 
-    obj.active.push(fallingPlatform(155, 615,110,1));
-
     if(!levelPreventSpawn[1])
         obj.active.push(healthPickup(710,920,1));
 
@@ -309,14 +307,12 @@ function level3() {
 
     sky(obj);
     levelBorders(obj);
-    //castleBack(obj, 1639, 170, 10, 20);
 
     castleBackLight(obj, -30, 670, 4, 10);
     castleBackHoles(obj, -30, 40, 1, 10);
     castleBackDark(obj, 220, 500, 10, 10)
     castleBackHoles(obj, 200, 390, 2, 2);
 
-   // tree(obj, 320, 800);
     tree(obj, 940, 620);
     tree(obj, 600, 180);
 
@@ -327,7 +323,6 @@ function level3() {
     castle(obj, 0, 1568, 18, 1);
     fill(obj, 0, 1600, 18, 20, 21);
     
-   // platform(obj, -10, 470, 4, 17);
     ground(obj, 900, 785, 10);
 
     castle(obj, 20, 958, 7, 5);
@@ -346,7 +341,6 @@ function level3() {
     castle(obj, 310, 732, 7, 1);
     castle(obj, 256, 628, 7, 1);
     
-    //castle(obj, 490, 832, 2, 4);
     castle(obj, 0, 0, 2, 32);
     castle(obj, 192, 0, 2, 27);
     castle(obj, 532, 500, 4, 17);
@@ -366,8 +360,8 @@ function level3() {
     castle(obj, 0, 960, 17, 5);
 
     platform(obj, 468, 350, 8, 17);
-    if(!levelPreventSpawn[5])
-     obj.active.push(doubleJumpPowerUp(564,470,5));
+    if(!levelPreventSpawn[7])
+     obj.active.push(doubleJumpPowerUp(564,470,7));
 
      if(!levelPreventSpawn[6])
      obj.active.push(healthPickup(380,596,6));
@@ -409,15 +403,13 @@ function level3() {
     obj.active.push(movingPlatform(740, 1540, 2, 17, 700, 1540));
     obj.active.push(movingPlatform(680, 1640, 2, 17, 720, 1640));
 
-    if (!levelPreventSpawn[2])
-        obj.active.push(breakable(200, 862, 2));
-    if (!levelPreventSpawn[3])
-        obj.active.push(breakable(1607, 640, 3));
-
-     obj.active.push(breakable(544, 1475, 3));
+    if (!levelPreventSpawn[8])
+        obj.active.push(breakable(200, 862, 8));
+    if (!levelPreventSpawn[9])
+        obj.active.push(breakable(544, 1475, 9));
 
      obj.active.push(door(60, 870, 10, 100, 2, 930, 280));//to level 2
-    obj.active.push(door(0, 1500, 10, 100, 4, 50, 50)); //door to level 4
+    //obj.active.push(door(0, 1500, 10, 100, 4, 50, 50)); //door to level 4
     return obj;
 }
 

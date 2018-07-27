@@ -70,8 +70,8 @@ function mainMenu() //main menu loop generates new character and map upon ending
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
-            //nextLevel(0,50,920);
-            nextLevel(3,100, 912);
+            nextLevel(0,50,920);
+            //nextLevel(3,100, 912);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -148,13 +148,12 @@ function generateBackground()// draws background layer should only be called dur
             tileList[currentRoom.static[i].tileNum].w,tileList[currentRoom.static[i].tileNum].h,
             currentRoom.static[i].x,currentRoom.static[i].y,
             tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
-        if(tileList[currentRoom.static[i].tileNum].passable == -1)
+        /*if(tileList[currentRoom.static[i].tileNum].passable == -1)
             {
                 offScreenSurface.fillStyle = 'green';
                 offScreenSurface.fillRect(currentRoom.static[i].x,currentRoom.static[i].y,
                 tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
             }//shows enemy blockers*/
-
     }
 }
 

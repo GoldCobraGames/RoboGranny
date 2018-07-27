@@ -12,7 +12,7 @@ function createCharacter() //generates and contains game character
     obj.jumpPowerup = false;
     obj.jumpTap = false;
         
-    obj.dashPowerup = true;
+    obj.dashPowerup = false;
     obj.dashTap = false;
     obj.dashGround = false;
     obj.dashCd = 0;
@@ -27,7 +27,7 @@ function createCharacter() //generates and contains game character
     obj.dead = false;
 
     obj.projectiles = [];
-    obj.projectilePowerup = true;
+    obj.projectilePowerup = false;
     obj.projectileTap = false;
     
     obj.iFrames = 0;
@@ -84,7 +84,7 @@ function createCharacter() //generates and contains game character
         if(this.iFrames <= 0)
         {
             this.health--;
-            this.iFrames = 30
+            this.iFrames = 45
         }
     };
     
@@ -194,7 +194,6 @@ function createCharacter() //generates and contains game character
     
     obj.tick = function ()
     {
-        this.jump2 = true;
         this.applyMovement(); //i am applying the movement vector in 2 half steps and checking collision after each to attemp to reduce tunneling
         this.applyCollision();
         userInputHandler();//user input 
@@ -207,11 +206,10 @@ function createCharacter() //generates and contains game character
     };
     obj.draw = function()
     {
-        onScreenSurface.fillStyle = 'white';
+        /*onScreenSurface.fillStyle = 'white';
         onScreenSurface.font = "20px Courier New";
         onScreenSurface.fillText(this.coordinates[0].toString(), 70, 70);
-        onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);
-
+        onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
             if(Math.abs(this.state) == 1)// on the ground 
@@ -272,8 +270,8 @@ function door(x,y,w,h,level,cx,cy) // x,y location    width,height of door   des
     };
     obj.draw = function()
     {
-        onScreenSurface.fillStyle = 'red';
-        onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
+        //onScreenSurface.fillStyle = 'red';
+        //onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
     };
     return obj;
 }
@@ -436,7 +434,7 @@ function bird(x,y)
             {
                 this.coordinates[0] += 3*Math.sin(this.diveAngle);
                 this.coordinates[1] += 3*Math.cos(this.diveAngle);
-                if((Math.abs(this.coordinates[1]-this.targetCoordinates[1]) <=3) || (Math.abs(this.coordinates[0]-this.targetCoordinates[0]) <=3))
+                if((Math.abs(this.coordinates[1]+32-this.targetCoordinates[1]) <=3) || (Math.abs(this.coordinates[0]+32-this.targetCoordinates[0]) <=3))
                     this.diveTimer++;
             }
             else if (this.diveTimer <= 50) //move after dive
