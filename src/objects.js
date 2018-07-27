@@ -20,8 +20,8 @@ function createCharacter() //generates and contains game character
     obj.state = 1;
     obj.animationFrame = 1;
     
-    obj.health = 4;
-    obj.maxHealth = 4;
+    obj.health = 6;
+    obj.maxHealth = 6;
     
     obj.respawnLocation = [0,0];
     obj.dead = false;
@@ -84,7 +84,7 @@ function createCharacter() //generates and contains game character
         if(this.iFrames <= 0)
         {
             this.health--;
-            this.iFrames = 45
+            this.iFrames = 60;
         }
     };
     
@@ -472,7 +472,7 @@ function bird(x,y)
                     currentRoom.active.push(explosion(this.coordinates[0]-5,this.coordinates[1]-20));
                 }
 
-            if (roughCollision(character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3],this.coordinates[0],this.coordinates[1]+25,64,39))
+            if (roughCollision(character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3],this.coordinates[0],this.coordinates[1]+25,64,39)  && character.iFrames == 0)
             {
                 FallSFX.play();						
                 this.bounceAngle = Math.atan2((this.coordinates[0]+32)-(character.coordinates[0]+15),(this.coordinates[1]+32)-(character.coordinates[1]+23));
