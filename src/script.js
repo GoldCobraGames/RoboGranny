@@ -69,8 +69,10 @@ function mainMenu() //main menu loop generates new character and map upon ending
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
+<<<<<<< HEAD
             //nextLevel(0,50,920);
             nextLevel(1,250,154);
+>>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -265,23 +267,41 @@ function fineCollision(x1,y1,w1,h1,x2,y2,w2,h2)//will use penetration testing to
         character.grounded();        
         character.moveVector[1]  = 0;
         character.coordinates[1]  -= t_collision;
+<<<<<<< HEAD
+=======
+        if(Math.abs(t_collision)>5)
+            character.crushed ++;
+>>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
     }
     else if (b_collision < t_collision && b_collision < l_collision && b_collision < r_collision && character.moveVector[1]<=0)
     {
         character.moveVector[1]  = 0;
         character.coordinates[1]  += b_collision;
+        if(Math.abs(b_collision)>5)
+            character.crushed ++;
     }
     else if (l_collision < r_collision && l_collision < t_collision && l_collision < b_collision && character.moveVector[0]>=0)
     {
         character.coordinates[0]  -= l_collision;
         character.moveVector[0]  = 0;
+<<<<<<< HEAD
+=======
+        if(Math.abs(l_collision)>5)
+            character.crushed ++;
+>>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
     }
     else if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision && character.moveVector[0]<=0)
     {
         character.moveVector[0]  = 0;
         character.coordinates[0]  += r_collision;
+<<<<<<< HEAD
     }
     character.crushed ++;
+=======
+        if(Math.abs(r_collision)>5)
+            character.crushed ++;
+    }
+>>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
 }
 
 function resetGame() //retuns to main menu
