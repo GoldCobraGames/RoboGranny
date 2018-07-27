@@ -42,8 +42,24 @@ function setTileList() //really belongs in objects file but is here for refernec
     tileList.push(tileInfo(124,592,68,32,0)); //castleBack holes2 39
     tileList.push(tileInfo(192,752,16,32,0)); //ladder visual 40
     tileList.push(tileInfo(174,243,1,10,3)); //ladder climbable 41
-    tileList.push(tileInfo(193,736,16,16,0)); //rope visual 41
-
+    tileList.push(tileInfo(193,736,16,16,0)); //rope visual 42
+    tileList.push(tileInfo(0,1056,16,16,1)); //caveTop left 43
+    tileList.push(tileInfo(16,1056,16,16,1)); //caveTop Middle 44
+    tileList.push(tileInfo(32,1056,16,16,1)); //caveTop right 45
+    tileList.push(tileInfo(48,1056,16,16,1)); //caveTop single 46
+    tileList.push(tileInfo(0,1072,16,16,1)); //caveMid left 47
+    tileList.push(tileInfo(16,1072,16,16,2)); //caveMid Middle 48
+    tileList.push(tileInfo(32,1072,16,16,1)); //caveMid right 49
+    tileList.push(tileInfo(48,1072,16,16,1)); //caveMid single 50
+    tileList.push(tileInfo(0,1088,16,16,1)); //caveBot left 51
+    tileList.push(tileInfo(16,1088,16,16,1)); //caveBot Middle 52
+    tileList.push(tileInfo(32,1088,16,16,1)); //caveBot right 53
+    tileList.push(tileInfo(48,1088,16,16,1)); //caveBot single 54
+    tileList.push(tileInfo(0,1040,16,16,1)); //caveFloat left 55
+    tileList.push(tileInfo(16,1040,16,16,1)); //caveFloat Middle 56
+    tileList.push(tileInfo(32,1040,16,16,1)); //caveFloat right 57
+    tileList.push(tileInfo(48,1040,16,16,1)); //caveFloat single 58
+    tileList.push(tileInfo(64,992,16,32,2)); //Lava 59
 }
 
 levelPreventSpawn=[false,false,false,false,false,false,false,false,false,false,false]
@@ -198,7 +214,7 @@ function level1()
     
     obj.active.push(bird(600,183));
     obj.active.push(slime(900,753));
-    obj.active.push(rotatingFire(1828,330,8));
+    obj.active.push(rotatingFire(1828,330,8,55,10));
 
     if(!levelPreventSpawn[2])
         obj.active.push(breakable(70,862,2));
@@ -273,10 +289,10 @@ function level2()
     obj.active.push(bird(600,338));
 
     obj.active.push(movingPlatform(650,915,3,30,650,794));
-    obj.active.push(rotatingFire(300,604,10));
-    obj.active.push(rotatingFire(786-256,508,6));
-    obj.active.push(rotatingFire(418,173,8));
-    obj.active.push(rotatingFire(786,754,8));
+    obj.active.push(rotatingFire(300,604,10,220,8));
+    obj.active.push(rotatingFire(786-256,508,6,134,7));
+    obj.active.push(rotatingFire(418,173,8,145,9));
+    obj.active.push(rotatingFire(786,754,8,65,5));
 
 
 
@@ -296,6 +312,7 @@ function level2()
     obj.active.push(door(0,405,10,100,1,1954,455)); //door to level 1
     obj.active.push(door(0, 230, 10, 100, 1, 1954, 282)); //door to level 1
     obj.active.push(door(990, 230, 10, 100, 3, 100, 912)); //door to level 3
+    obj.active.push(door(990, 890, 10, 100, 5, 20, 154)); //door to level 5
     return obj;
 }
 
@@ -303,7 +320,7 @@ function level3() {
     let obj = {};
     obj.static = [];
     obj.active = [];
-    obj.maxCamera = [1000, 2000];
+    obj.maxCamera = [1000, 1700];
 
     sky(obj);
     levelBorders(obj);
@@ -321,7 +338,7 @@ function level3() {
     fill(obj, 0, 990, 18, 15, 21);
     castle(obj, 0, 1450, 18, 1);
     castle(obj, 0, 1568, 18, 1);
-    fill(obj, 0, 1600, 18, 20, 21);
+    fill(obj, 0, 1600, 18, 4, 21);
     
     ground(obj, 900, 785, 10);
 
@@ -351,20 +368,20 @@ function level3() {
     castle(obj, 532, 1040, 3, 1);
     castle(obj, 532, 1072, 2, 1);
 
-    obj.active.push(rotatingFire(380,832,4));
+    obj.active.push(rotatingFire(380,732,6,270,8));
 
-    obj.active.push(rotatingFire(380,628,4));
-    obj.active.push(rotatingFire(380,628,5));
-    obj.active.push(rotatingFire(380,628,4));
+    obj.active.push(rotatingFire(330,500,5,120,12));
+    obj.active.push(rotatingFire(330,500,5,240,12));
+    obj.active.push(rotatingFire(330,500,5,360,12));
 
     castle(obj, 0, 960, 17, 5);
 
     platform(obj, 468, 350, 8, 17);
     if(!levelPreventSpawn[7])
-     obj.active.push(doubleJumpPowerUp(564,470,7));
+        obj.active.push(doubleJumpPowerUp(564,470,7));
 
      if(!levelPreventSpawn[6])
-     obj.active.push(healthPickup(380,596,6));
+        obj.active.push(healthPickup(380,596,6));
 
      obj.static.push(returnTile(320,580,36));
      obj.static.push(returnTile(320,780,36));
@@ -427,6 +444,29 @@ function level4() {
     castle(obj, 608, 0, 1, 20);
     castle(obj, 32,608,18,1);
 
-    messageSystem("     PREPARE TO DIE!     Press Enter to Continue");//BOSS FIGHT
+    //messageSystem("     PREPARE TO DIE!     Press Enter to Continue");//BOSS FIGHT
+    return obj;
+}
+
+function level5() {
+    let obj = {};
+    obj.static = [];
+    obj.active = [];
+    obj.maxCamera = [1500, 800];
+
+    caveBack(obj);
+    levelBorders(obj);
+    
+    cave(obj, 556,-12,28,3);
+    cave(obj, -10,200,5,2);
+    castle(obj,-10,-12,18,3);
+    cave(obj, -10,200,1,30);
+    cave(obj, 380,200,4,1);
+    cave(obj, 16,530,7,2);
+    lava(obj,21,770,10);
+    
+    ladder(obj,151,205,5,1);
+    
+    obj.active.push(door(0, 90, 10, 100, 2, 958, 929)); //door to level 2
     return obj;
 }

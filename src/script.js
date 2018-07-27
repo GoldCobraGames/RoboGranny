@@ -5,8 +5,8 @@ var offScreenSurface = offScreenCanvas.getContext("2d");
 offScreenSurface.imageSmoothingEnabled = false;
 
 var skyCanvas = document.createElement('canvas');
-skyCanvas.width = '2500';
-skyCanvas.height = '2500';
+skyCanvas.width = '5000';
+skyCanvas.height = '5000';
 var skySurface = skyCanvas.getContext("2d");
 skySurface.imageSmoothingEnabled = false;
 
@@ -70,7 +70,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             nextLevel(0,50,920);
-            //nextLevel(1,1650, 612);
+            //nextLevel(0,50,120);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -140,7 +140,7 @@ function render() //clears screen and draws all elements in turn
 function generateBackground()// draws background layer should only be called during screen transitions
 {
 
-    offScreenSurface.clearRect(0,0,3000,3000);
+    offScreenSurface.clearRect(0,0,5000,5000);
     for(let i =0; i<currentRoom.static.length; i++)
     {
         offScreenSurface.drawImage(tilesImage,tileList[currentRoom.static[i].tileNum].x,tileList[currentRoom.static[i].tileNum].y,
@@ -168,11 +168,14 @@ function drawMain() //draws all enemies player and interactive objects
 function drawUi() //draws hearts 
 {
     for(let i=0;i<Math.floor(character.health/2);i++) //draws full hearts ui
-        onScreenSurface.drawImage(heartImage,0,0,16,16,5+(35*i),5,16*2,16*2);
+        onScreenSurface.drawImage(heartImage,0,0,16,16,5+(35*i),5,32,32);
     if(character.health%2 === 1) // draws half hearts for ui
-        onScreenSurface.drawImage(heartImage,0,15,16,16,5+(35*(Math.floor(character.health/2))),5,16*2,16*2);
+        onScreenSurface.drawImage(heartImage,0,15,16,16,5+(35*(Math.floor(character.health/2))),5,32,32);
     for(let i=0;i<Math.ceil((character.maxHealth-character.health)/2)-character.health%2;i++) // draws empty hearts for ui
-        onScreenSurface.drawImage(heartImage,1,30,16,16,5+(35*(i+Math.ceil(character.health/2))),5,16*2,16*2);   
+        onScreenSurface.drawImage(heartImage,1,30,16,16,5+(35*(i+Math.ceil(character.health/2))),5,32,32);
+    if(character.projectilePowerup || character.dashPowerup)
+        for(let i=0;i<character.ammo;i++) //draws ammo ui
+            onScreenSurface.drawImage(tilesImage,268,8,15,15,5+(35*i),42,30,30);
 }
 
 function drawBackground() // draws UI ontop of everything else currently showing debug info
@@ -262,8 +265,6 @@ function fineCollision(x1,y1,w1,h1,x2,y2,w2,h2)//will use penetration testing to
         character.grounded();        
         character.moveVector[1]  = 0;
         character.coordinates[1]  -= t_collision;
-        if(Math.abs(t_collision)>16)
-            character.respawn();
     }
     else if (b_collision < t_collision && b_collision < l_collision && b_collision < r_collision && character.moveVector[1]<=0)
     {
@@ -271,11 +272,16 @@ function fineCollision(x1,y1,w1,h1,x2,y2,w2,h2)//will use penetration testing to
         character.coordinates[1]  += b_collision;
     }
     else if (l_collision < r_collision && l_collision < t_collision && l_collision < b_collision && character.moveVector[0]>=0)
+    {
         character.coordinates[0]  -= l_collision;
+        character.moveVector[0]  = 0;
+    }
     else if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision && character.moveVector[0]<=0)
+    {
+        character.moveVector[0]  = 0;
         character.coordinates[0]  += r_collision;
-
-    
+    }
+    character.crushed ++;
 }
 
 function resetGame() //retuns to main menu
@@ -288,6 +294,7 @@ function resetGame() //retuns to main menu
 
 function nextLevel(goto,x,y) //loads specified level at specified coordinates also sets player spawn and zeroes movement also makes sure camera starts in bounds
 {
+    skySurface.clearRect(0,0,5000,5000);
     currentRoom = generateRoomMap(goto);
     character.coordinates[0] = x;
     character.coordinates[1] = y;
@@ -296,11 +303,11 @@ function nextLevel(goto,x,y) //loads specified level at specified coordinates al
     character.moveVector[1] = 0;
     camera.coordinates = [character.coordinates[0],character.coordinates[1]];
     if(camera.coordinates[0]<0)
-        camera.coordinates[0] = 0;
+        camera.coordinates[0] = 1;
     if(camera.coordinates[0]>currentRoom.maxCamera[0]-600)
         camera.coordinates[0] = currentRoom.maxCamera[0]-600;
     if(camera.coordinates[1]<0)
-        camera.coordinates[1] = 0;
+        camera.coordinates[1] = 1;
     if(camera.coordinates[1]>currentRoom.maxCamera[1]-600)
         camera.coordinates[1] = currentRoom.maxCamera[1]-600;
     generateBackground();
@@ -312,13 +319,13 @@ function createCamera() // camera object behaves diferently from all other objec
 	obj.coordinates = [0,0];
 	obj.tick = function ()
 	{
-		if(character.coordinates[0]-this.coordinates[0] > 300 && this.coordinates[0] < currentRoom.maxCamera[0]-600)
+		if(character.coordinates[0]-this.coordinates[0] > 300 && this.coordinates[0] < currentRoom.maxCamera[0]-599)
 			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);
-		if(character.coordinates[0]-this.coordinates[0] < 300 && this.coordinates[0] > 0)
+		if(character.coordinates[0]-this.coordinates[0] < 300 && this.coordinates[0] > 1)
 			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);		
-		if(character.coordinates[1]-this.coordinates[1] > 300 && this.coordinates[1] < currentRoom.maxCamera[1]-600)
+		if(character.coordinates[1]-this.coordinates[1] > 300 && this.coordinates[1] < currentRoom.maxCamera[1]-599)
 			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
-		if(character.coordinates[1]-this.coordinates[1] < 300 && this.coordinates[1] > 0)
+		if(character.coordinates[1]-this.coordinates[1] < 300 && this.coordinates[1] > 1)
 			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
 	};
 	return obj;
