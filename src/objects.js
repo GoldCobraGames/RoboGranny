@@ -798,6 +798,7 @@ function doubleJumpPowerUp(x,y,num)
         if (roughCollision(this.coordinates[0],this.coordinates[1],34,34,character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3]))
         {
             character.jumpPowerup = true;
+            messageSystem("    You Have Picked up           an ability        Hit Up while jumping          to double jump       Press Enter to continue");
             PowerupSFX.play();						
             currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
             levelPreventSpawn[this.num]= true;
@@ -836,6 +837,7 @@ function dashPowerUp(x,y,num)
         if (roughCollision(this.coordinates[0],this.coordinates[1],50,50,character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3]))
         {
             character.dashPowerup = true;
+            messageSystem("    You Have Picked up           an ability            Hit Shift to dash    and escape danger     Press Enter to continue");
             PowerupSFX.play();
             levelPreventSpawn[this.num]= true;
             currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
@@ -958,6 +960,17 @@ function ground(obj,x,y,length)  //object reference , x,ytop left corner  ,    l
     platform(obj,x,y,length,13);
     for(let i =1;i<height;i++)
         platform(obj,x,y+(32*i),length,21);
+}
+
+function enemyBlockers(obj, x, y, left, right) {
+    obj.static.push(returnTile(x-left,y,35));
+    obj.static.push(returnTile(x+right,y,35));
+};
+
+function fill(obj,x,y,length,height, id) //object reference , x,ytop left corner,  length castle ,height of castle
+{
+    for(let i =0;i<height;i++)
+        platform(obj,x,y+(32*i),length,id);
 }
 
 function castle(obj,x,y,length,height) //object reference , x,ytop left corner,  length castle ,height of castle

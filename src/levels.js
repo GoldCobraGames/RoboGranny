@@ -46,7 +46,7 @@ function setTileList() //really belongs in objects file but is here for refernec
 
 }
 
-levelPreventSpawn=[false,false,false,false,false,false]
+levelPreventSpawn=[false,false,false,false,false,false,false,false,false,false,false]
 
 function level0()
 {
@@ -297,7 +297,7 @@ function level2()
     obj.active.push(door(0,630,10,100,1,1954,689)); //door to level 1
     obj.active.push(door(0,405,10,100,1,1954,455)); //door to level 1
     obj.active.push(door(0, 230, 10, 100, 1, 1954, 282)); //door to level 1
-    obj.active.push(door(990, 230, 10, 100, 3, 15, 282)); //door to level 3
+    obj.active.push(door(990, 230, 10, 100, 3, 100, 912)); //door to level 3
     return obj;
 }
 
@@ -305,69 +305,136 @@ function level3() {
     let obj = {};
     obj.static = [];
     obj.active = [];
-    obj.maxCamera = [1000, 1000];
+    obj.maxCamera = [1000, 2000];
 
     sky(obj);
     levelBorders(obj);
-    castleBackLight(obj, 0, 429, 17, 2);
-    castleBackHoles(obj, 0, 173, 4, 4);
-    castleBackDark(obj, 0, 536, 34, 10);
+    //castleBack(obj, 1639, 170, 10, 20);
 
-    castle(obj, -10, 735, 5, 9);
-    castle(obj, -10, 505, 27, 1);
-    castle(obj, 148, 975, 27, 1);
-    castle(obj, -10, 330, 5, 1);
-    castle(obj, 300, 537, 1, 8);
-    castle(obj, 300, 794, 10, 1);
-    castle(obj, 786, 700, 1, 10);
-    castle(obj, 400, 700, 16, 1);
-    castle(obj, 978, 330, 1, 18);
-    castle(obj, 690, 330, 10, 1);
-    castle(obj, -10, 108, 3, 2);
-    castle(obj, 85, 140, 8, 1);
-    castle(obj, 10, 173, 32, 1);
+    castleBackLight(obj, -30, 670, 4, 10);
+    castleBackHoles(obj, -30, 40, 1, 10);
+    castleBackDark(obj, 220, 500, 10, 10)
+    castleBackHoles(obj, 200, 390, 2, 2);
 
-    ladder(obj, 148, 778, 3, 1); //wood ladder
-    ladder(obj, 910, 361, 18, 2); //climable rope
-    ladder(obj, 347, 535, 6, 2); //climable rope
-    obj.static.push(returnTile(194, 600, 36)); //torch
-    obj.static.push(returnTile(80, 600, 36)); //torch
-    obj.static.push(returnTile(230, 850, 36)); //torch
-    obj.static.push(returnTile(350, 850, 36)); //torch
-    obj.static.push(returnTile(470, 850, 36)); //torch
-    obj.static.push(returnTile(745, 750, 36)); //torch
-    obj.static.push(returnTile(450, 600, 36)); //torch
-    obj.static.push(returnTile(590, 600, 36)); //torch
-    obj.static.push(returnTile(730, 600, 36)); //torch
-    obj.static.push(returnTile(850, 850, 36)); //torch
+   // tree(obj, 320, 800);
+    tree(obj, 940, 620);
+    tree(obj, 600, 180);
 
+    castleBackDark(obj, 0, 1450, 18, 3);
+    platform(obj, 0, 958, 18, 13);
+    fill(obj, 0, 990, 18, 15, 21);
+    castle(obj, 0, 1450, 18, 1);
+    castle(obj, 0, 1568, 18, 1);
+    fill(obj, 0, 1600, 18, 9, 21);
+    
+   // platform(obj, -10, 470, 4, 17);
+    ground(obj, 900, 785, 10);
 
+    castle(obj, 20, 958, 7, 5);
+    castle(obj, 20, 40, 7, 2);
+    castle(obj, 64, 200, 4, 2);
+    castle(obj, 64, 400, 4, 2);
+    castle(obj, 64, 600, 4, 2);
+    castle(obj, 64, 800, 4, 2);
 
-    obj.static.push(returnTile(130, 950, 35)); //enemy blocker
-    obj.static.push(returnTile(786, 950, 35)); // enemy blocker
-    obj.static.push(returnTile(312, 768, 35)); //enemy blocker
-    obj.static.push(returnTile(618, 768, 35)); // enemy blocker
+    ladder(obj,272,500,2,1);
+    ladder(obj,496,820,2,1);
+    ladder(obj,272,700,2,1);
+    ladder(obj,496,600,2,1);
+    castle(obj, 310, 500, 9, 1);
+    castle(obj, 256, 832, 7, 1);
+    castle(obj, 310, 732, 7, 1);
+    castle(obj, 256, 628, 7, 1);
+    
+    //castle(obj, 490, 832, 2, 4);
+    castle(obj, 0, 0, 2, 32);
+    castle(obj, 192, 0, 2, 27);
+    castle(obj, 532, 500, 4, 17);
+    castle(obj, 660, 500, 2, 1);
+    castle(obj, 692, 372, 1, 4);
+    castle(obj, 468, 372, 1, 2);
+    castle(obj, 500, 372, 6, 1);
+    castle(obj, 532, 1040, 3, 1);
+    castle(obj, 532, 1072, 2, 1);
 
-    obj.active.push(slime(160, 943));
-    obj.active.push(slime(640, 943));
-    obj.active.push(slime(400, 763));
+    obj.active.push(rotatingFire(380,732,4));
 
-    obj.static.push(returnTile(840, 350, 35)); //enemy blocker
-    obj.static.push(returnTile(240, 350, 35)); // enemy blocker
+    obj.active.push(rotatingFire(380,628,4));
+    obj.active.push(rotatingFire(380,628,5));
+    obj.active.push(rotatingFire(380,628,4));
 
-    obj.active.push(bird(600, 338));
+    castle(obj, 0, 960, 17, 5);
 
-    obj.active.push(movingPlatform(650, 915, 3, 30, 650, 794));
+    platform(obj, 468, 350, 8, 17);
+    if(!levelPreventSpawn[5])
+     obj.active.push(doubleJumpPowerUp(564,470,5));
 
-    for (let i = 0; i < 14; i++)
-        obj.active.push(fallingPlatform(170 + (i * 32), 330, 30, 2));
+     if(!levelPreventSpawn[6])
+     obj.active.push(healthPickup(380,596,6));
 
-    if (!levelPreventSpawn[4])
-        obj.active.push(breakable(973, 880, 4));
+     obj.static.push(returnTile(320,580,36));
+     obj.static.push(returnTile(320,780,36));
+     obj.static.push(returnTile(450,680,36));
+     obj.static.push(returnTile(450,880,36));
+    obj.static.push(returnTile(520, 375, 28)); //vine
+    obj.static.push(returnTile(600, 365, 28)); //vine
+    obj.static.push(returnTile(650, 370, 28)); //vine
+    obj.static.push(returnTile(472, 420, 28)); //vine
+    obj.static.push(returnTile(30, 800, 28)); //vine
+    obj.static.push(returnTile(10, 600, 28)); //vine
+    obj.static.push(returnTile(20, 200, 28));
+    obj.static.push(returnTile(200, 400, 28));
+    obj.static.push(returnTile(140, 870, 36));
 
-    //obj.active.push(door(0, 630, 10, 100, 2, 1954, 689)); //door to level 1
-    //obj.active.push(door(0, 405, 10, 100, 2, 1954, 455)); //door to level 1
-    obj.active.push(door(0, 230, 10, 100, 2, 1954, 282)); //door to level 2
-    //obj.active.push(door(990, 230, 10, 100, 2, 15, 282)); //door to level 2//next level door
+    enemyBlockers(obj, 800, 520, 140, 180);
+    obj.active.push(bird(800,520));
+    enemyBlockers(obj, 750, 1200, 150, 150);
+    obj.active.push(bird(750,1200));
+    enemyBlockers(obj, 750, 1500, 150, 150);
+    obj.active.push(bird(750,1500));
+
+    obj.active.push(movingPlatform(660, 600, 2, 17, 900, 600));
+
+    obj.active.push(movingPlatform(720, 500, 2, 17, 950, 500));
+    obj.active.push(movingPlatform(800, 700, 2, 17, 660, 700));
+
+    obj.active.push(movingPlatform(720, 1185, 1, 17, 800, 785));
+    obj.active.push(movingPlatform(800, 785, 1, 17, 660, 1185));
+    obj.active.push(movingPlatform(660, 785, 1, 17, 800, 1185));
+    obj.active.push(movingPlatform(800, 1185, 1, 17, 660, 785));
+
+    obj.active.push(movingPlatform(660, 1240, 2, 17, 800, 1240));
+    obj.active.push(movingPlatform(800, 1340, 2, 17, 660, 1340));
+    obj.active.push(movingPlatform(680, 1440, 2, 17, 780, 1440));
+    obj.active.push(movingPlatform(740, 1540, 2, 17, 700, 1540));
+    obj.active.push(movingPlatform(680, 1640, 2, 17, 720, 1640));
+
+    if (!levelPreventSpawn[2])
+        obj.active.push(breakable(200, 862, 2));
+    if (!levelPreventSpawn[3])
+        obj.active.push(breakable(1607, 640, 3));
+
+     obj.active.push(breakable(544, 1475, 3));
+
+     obj.active.push(door(60, 870, 10, 100, 2, 930, 280));//to level 2
+    obj.active.push(door(0, 1500, 10, 100, 4, 50, 50)); //door to level 4
+    return obj;
+}
+
+function level4() {
+    let obj = {};
+    obj.static = [];
+    obj.active = [];
+    obj.maxCamera = [640, 640];
+
+    sky(obj);
+    levelBorders(obj);
+
+    castle(obj,32,0,18,1);
+    castle(obj,0,0,1,20);
+    castle(obj, 608, 0, 1, 20);
+    castle(obj, 32,608,18,1);
+
+    messageSystem("     PREPARE TO DIE!     Press Enter to Continue");//BOSS FIGHT
     return obj;
 }
