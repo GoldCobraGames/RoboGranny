@@ -10,7 +10,6 @@ skyCanvas.height = '2500';
 var skySurface = skyCanvas.getContext("2d");
 skySurface.imageSmoothingEnabled = false;
 
-
 let onScreenCanvas = document.getElementById("bg");//getting canvas
 let onScreenSurface = onScreenCanvas.getContext("2d");//setting canvas for drawing
 onScreenSurface.imageSmoothingEnabled = false;

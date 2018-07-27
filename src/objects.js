@@ -83,7 +83,7 @@ function createCharacter() //generates and contains game character
     {
         if(this.iFrames <= 0)
         {
-            this.health--;
+            //this.health--;
             this.iFrames = 45
         }
     };
