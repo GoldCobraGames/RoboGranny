@@ -1,18 +1,10 @@
-#subtitle
-{
-    text-align: center;
-    color:darkolivegreen;
-    font-size: 15px;
-    font-weight: bold;
-}
 #main
 {
     margin: auto;
     height: 600px;
     width: 600px;
-    background-color: white;
     position: relative;
-    border: 5px solid slategray;
+    border: 5px solid black;
 }
 h1
 {
@@ -23,5 +15,5 @@ h1
 #bg
 {
     position: absolute;
-    background-color: lightgrey;
+    background-color: blue;
 }

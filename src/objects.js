@@ -12,10 +12,8 @@ function createCharacter() //generates and contains game character
     obj.jumpPowerup = false;
     obj.jumpTap = false;
         
-    obj.dashPowerup = false;
+    obj.dashPowerup = true;
     obj.dashTap = false;
-    obj.dashGround = false;
-    obj.dashCd = 0;
     
     obj.state = 1;
     obj.animationFrame = 1;
@@ -23,17 +21,23 @@ function createCharacter() //generates and contains game character
     obj.health = 6;
     obj.maxHealth = 6;
     
+    obj.maxAmmo = 5;    
+    obj.ammo = 5;
+    obj.ammoTimer = 0;
+
     obj.respawnLocation = [0,0];
     obj.dead = false;
 
     obj.projectiles = [];
-    obj.projectilePowerup = false;
+    obj.projectilePowerup = true;
     obj.projectileTap = false;
     
     obj.iFrames = 0;
     obj.ladder = false;
     obj.ladderDir = 0;
     
+    obj.crushed = 0;
+
     obj.jump = function()
     {
         if((this.jump1 && this.jumpTap) || (this.jump2 && this.jumpTap))
@@ -61,19 +65,16 @@ function createCharacter() //generates and contains game character
         character.jump1 = true;
         if(character.jumpPowerup || this.ladder)
             character.jump2 = true;
-        if(character.dashCd < 0)
-            character.dashGround = true;
     }
     
     obj.dash = function()
     {
-        if(this.dashTap && this.dashPowerup && this.dashGround && this.dashCd < 0)
+        if(this.dashTap && this.dashPowerup && this.ammo > 1 )
         {
-            this.dashCd = 60;
             DashSFX.play();
+            this.ammo-=2;
             this.dashTap = false;
-            this.dashGround = false;
-            this.moveVector[0] += 40*Math.sign(this.directionFacing);
+            this.moveVector[0] = 40*Math.sign(this.directionFacing);
 
         }
                          
@@ -102,8 +103,13 @@ function createCharacter() //generates and contains game character
             this.dead = true;
             messageSystem("       You Are Dead        Press Enter to continue");
         }
-        if(this.dashCd >= 0) //dash timer
-            this.dashCd--;
+        if(this.ammo < this.maxAmmo)
+            this.ammoTimer++;
+        if(this.ammoTimer > 30)
+        {
+            this.ammo++;
+            this.ammoTimer=0;
+        }
         if(this.iFrames > 0) //invincibility frame timer
             this.iFrames--;
         this.jump1 = false; //prevents using first jump after leaving platform
@@ -114,6 +120,9 @@ function createCharacter() //generates and contains game character
             this.directionFacing = -1;
         else if (this.moveVector[0] > 0)
             this.directionFacing = 1;
+        if(this.crushed >= 4)
+            this.respawn();
+        this.crushed = 0;
     };
 
     obj.applyCollision = function()
@@ -168,8 +177,9 @@ function createCharacter() //generates and contains game character
 
     obj.shoot = function()
     {
-        if(this.projectileTap && this.projectilePowerup)
+        if(this.projectileTap && this.projectilePowerup && this.ammo >0)
         {
+            this.ammo--;
             this.projectiles.push(projectile(this.coordinates[0],this.coordinates[1],this.directionFacing));
             this.projectileTap = false;
         }
@@ -194,6 +204,7 @@ function createCharacter() //generates and contains game character
     
     obj.tick = function ()
     {
+        this.jump2 = true;
         this.applyMovement(); //i am applying the movement vector in 2 half steps and checking collision after each to attemp to reduce tunneling
         this.applyCollision();
         userInputHandler();//user input 
@@ -210,6 +221,7 @@ function createCharacter() //generates and contains game character
         onScreenSurface.font = "20px Courier New";
         onScreenSurface.fillText(this.coordinates[0].toString(), 70, 70);
         onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
+        
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
             if(Math.abs(this.state) == 1)// on the ground 
@@ -270,8 +282,8 @@ function door(x,y,w,h,level,cx,cy) // x,y location    width,height of door   des
     };
     obj.draw = function()
     {
-        //onScreenSurface.fillStyle = 'red';
-        //onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
+        onScreenSurface.fillStyle = 'red';
+        onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
     };
     return obj;
 }
@@ -406,88 +418,14 @@ function bird(x,y)
     {
         if(!this.dead)
         {
-            if(this.characterDistance < 190 && !this.diveState) //checks if enemy should dive
-            {
-                this.diveState = true;
-                this.targetCoordinates = [character.coordinates[0]+15,character.coordinates[1]+23]
-                this.diveTimer = 0;
-                this.diveAngle = Math.atan2(this.targetCoordinates[0]-(this.coordinates[0]+32),(this.targetCoordinates[1]+25-this.coordinates[1]+32));
-                if(this.diveAngle > 0)
-                    this.visualState = true;
-                else
-                    this.visualState = false;
-            }
-
+            this.checkDive();
             if(this.direction)
-                this.returnCoordinates[0]+=2;
+                this.returnCoordinates[0]+=1;
             else if (!this.direction)
-                this.returnCoordinates[0]-=2;
-
-            if(!this.diveState) //normal state
-            {
-                this.coordinates = [this.returnCoordinates[0],this.returnCoordinates[1]];
-                this.characterDistance = Math.sqrt(Math.pow(((character.coordinates[0]+15)-(this.coordinates[0]+32)),2)
-                                +Math.pow(((character.coordinates[1]+23)-(this.coordinates[1]+32)),2));
-                this.visualState = this.direction;
-            }
-            else if (this.diveTimer == 0) //dive
-            {
-                this.coordinates[0] += 3*Math.sin(this.diveAngle);
-                this.coordinates[1] += 3*Math.cos(this.diveAngle);
-                if((Math.abs(this.coordinates[1]+32-this.targetCoordinates[1]) <=3) || (Math.abs(this.coordinates[0]+32-this.targetCoordinates[0]) <=3))
-                    this.diveTimer++;
-            }
-            else if (this.diveTimer <= 50) //move after dive
-            {
-                if(this.visualState)
-                    this.coordinates[0] +=2;
-                else
-                    this.coordinates[0] -= 2;
-                this.diveTimer ++;
-            }
-            else // return to normal state
-            {
-                this.diveAngle = Math.atan2(this.returnCoordinates[0]-this.coordinates[0],this.returnCoordinates[1]-this.coordinates[1]);
-                this.coordinates[0] += 2*Math.sin(this.diveAngle);
-                this.coordinates[1] += 2*Math.cos(this.diveAngle);
-                if(this.diveAngle > 0)
-                    this.visualState = true;
-                else
-                    this.visualState = false;
-                if(Math.abs(this.coordinates[1] - this.returnCoordinates[1]) <=3 || (Math.abs(this.coordinates[0]-this.targetCoordinates[0]) <=3))
-                {
-                    this.diveState = false;
-                    this.characterDistance = Math.sqrt(Math.pow(((character.coordinates[0]+15)-(this.coordinates[0]+32)),2)
-                        +Math.pow(((character.coordinates[1]+23)-(this.coordinates[1]+32)),2));
-                }
-            }
-
-            for(let i = 0;i<character.projectiles.length;i++)
-                if (roughCollision(this.coordinates[0],this.coordinates[1]+25,64,39,character.projectiles[i].coordinates[0],character.projectiles[i].coordinates[1],20,20))
-                {
-                    BirdSFX.play();
-                    this.dead = true;
-                    this.animationTimer = 0;
-                    character.projectiles.splice(character.projectiles.indexOf(i), 1);
-                    currentRoom.active.push(explosion(this.coordinates[0]-5,this.coordinates[1]-20));
-                }
-
-            if (roughCollision(character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3],this.coordinates[0],this.coordinates[1]+25,64,39)  && character.iFrames == 0)
-            {
-                FallSFX.play();						
-                this.bounceAngle = Math.atan2((this.coordinates[0]+32)-(character.coordinates[0]+15),(this.coordinates[1]+32)-(character.coordinates[1]+23));
-                character.hurt();
-                character.moveVector[0] -= 20*Math.sin(this.bounceAngle);
-                character.moveVector[1] = -5*Math.cos(this.bounceAngle);
-            }
-            for (let i= 0; i<currentRoom.static.length; i++)
-            {
-                if(tileList[currentRoom.static[i].tileNum].passable == -1)
-                {
-                    if(roughCollision(this.returnCoordinates[0],this.returnCoordinates[1],64,64,currentRoom.static[i].x, currentRoom.static[i].y,tileList[currentRoom.static[i].tileNum].w*2, tileList[currentRoom.static[i].tileNum].h*2))
-                        this.direction = !this.direction;
-                }
-            }
+                this.returnCoordinates[0]-=1;
+            this.stateManager();
+            this.advanceAnimationTimer();
+            this.checkCollision();
         }
         else
         {
@@ -495,12 +433,126 @@ function bird(x,y)
             if(this.animationTimer>200)
                 currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
         }
+    };
+    
+    obj.stateManager = function()
+    {
+        if(!this.diveState) //normal state
+        {
+            this.normalState();
+        }
+        else if (this.diveTimer == 0) //dive
+        {
+             this.diveState1();
+        }
+        else if (this.diveTimer <= 50) //move after dive
+        {
+            this.diveState2();
+        }
+        else // return to normal state
+        {
+             this.recoveryState();
+        }
+    };
+   
+    obj.normalState = function()
+    {
+        this.coordinates[0] = this.returnCoordinates[0];
+        this.coordinates[1] = this.returnCoordinates[1];
+        this.characterDistance = Math.sqrt(Math.pow(((character.coordinates[0]+15)-(this.coordinates[0]+38)),2)
+                                           +Math.pow(((character.coordinates[1]+32)-(this.coordinates[1]+48)),2));
+        this.visualState = this.direction;
+        if(this.diveTimer<0)
+            this.diveTimer++;
+    };
+
+    obj.diveState1 = function()
+    {
+        this.diveAngle = Math.atan2(this.targetCoordinates[0]-this.coordinates[0]-38,this.targetCoordinates[1]-this.coordinates[1]-48);
+        this.coordinates[0] += 2*Math.sin(this.diveAngle);
+        this.coordinates[1] += 2*Math.cos(this.diveAngle);
+        if(roughCollision(this.coordinates[0]+38,this.coordinates[1]+48,10,10,this.targetCoordinates[0],this.targetCoordinates[1],10,10))
+                this.diveTimer++;
+        if(this.diveAngle > 0)
+            this.visualState = true;
+        else
+            this.visualState = false;
+    };
+    
+    obj.diveState2 = function()
+    {
+        if(this.visualState)
+            this.coordinates[0] +=1;
+        else
+            this.coordinates[0] -= 1;
+        this.diveTimer ++;
+    };
+    
+    obj.recoveryState = function()
+    {
+        this.diveAngle = Math.atan2(this.returnCoordinates[0]-this.coordinates[0],this.returnCoordinates[1]-this.coordinates[1]);
+        this.coordinates[0] += 2*Math.sin(this.diveAngle);
+        this.coordinates[1] += 2*Math.cos(this.diveAngle);
+        if(this.diveAngle > 0)
+            this.visualState = true;
+        else
+            this.visualState = false;
+        if(roughCollision(this.coordinates[0],this.coordinates[1],10,10,this.returnCoordinates[0],this.returnCoordinates[1],10,10))
+        {
+            this.diveState = false;
+            this.diveTimer = -60;
+        }
+    };
+    
+    obj.checkDive = function()
+    {
+        if(this.characterDistance < 190 && !this.diveState && this.diveTimer == 0) //checks if enemy should dive
+        {
+            this.diveState = true;
+            this.targetCoordinates = [character.coordinates[0]+15,character.coordinates[1]+23]
+            if(this.diveAngle > 0)
+                this.visualState = true;
+            else
+                this.visualState = false;
+            }
+    };
+    
+    obj.checkCollision = function()
+    {
+        for(let i = 0;i<character.projectiles.length;i++)
+            if (roughCollision(this.coordinates[0]+16,this.coordinates[1]+38,45,32,character.projectiles[i].coordinates[0],character.projectiles[i].coordinates[1],20,20))
+            {
+                BirdSFX.play();
+                this.dead = true;
+                this.animationTimer = 0;
+                character.projectiles.splice(character.projectiles.indexOf(i), 1);
+                currentRoom.active.push(explosion(this.coordinates[0]-5,this.coordinates[1]-20));
+            }
+        if (roughCollision(character.coordinates[0],character.coordinates[1],character.sprite[2],character.sprite[3],this.coordinates[0]+16,this.coordinates[1]+38,45,32)  && character.iFrames == 0)
+        {
+            FallSFX.play();						
+            this.bounceAngle = Math.atan2((this.coordinates[0]+38)-(character.coordinates[0]+15),(this.coordinates[1]+48)-(character.coordinates[1]+23));
+            character.hurt();
+            character.moveVector[0] -= 20*Math.sin(this.bounceAngle);
+            character.moveVector[1] = -5*Math.cos(this.bounceAngle);
+        }
+        for (let i= 0; i<currentRoom.static.length; i++)
+        {
+            if(tileList[currentRoom.static[i].tileNum].passable == -1)
+            {
+                if(roughCollision(this.returnCoordinates[0],this.returnCoordinates[1]-32,32,100,currentRoom.static[i].x, currentRoom.static[i].y,tileList[currentRoom.static[i].tileNum].w*2, tileList[currentRoom.static[i].tileNum].h*2))
+                    this.direction = !this.direction;
+            }
+        }
+    };
+    
+    obj.advanceAnimationTimer = function()
+    {
         this.animationTimer ++;
         if(this.animationTimer > 10000)
             this.animationTimer = 0;
-
-    
     };
+
     obj.draw = function()
     {
         if(!this.dead)
@@ -650,18 +702,19 @@ function movingPlatform(x,y,length,type,x2,y2)// x,y start coordinates ,     len
    
 }
 
-function rotatingFire(x,y,length)// x,y, length of fire stick
+function rotatingFire(x,y,length,startAngle,speed)// x,y, length of fire stick, startAngle, speed in frames to make a full rotation
 {
     let obj = {};
     obj.coordinates = [x,y];
-    obj.rotationAngle = Math.random()*Math.PI*2;
+    obj.rotationAngle = startAngle*(Math.PI/180);
+    obj.speed = (Math.PI/15)/speed;
     obj.fireBalls = [];
     for(let i = 0;i<length;i++)
         obj.fireBalls.push(fireBall(x,y));
     
     obj.tick = function()
     {
-        this.rotationAngle += (3/180);
+        this.rotationAngle += this.speed;
         if(this.rotationAngle> Math.PI*2);
             this.rotationAngle - Math.PI*2;
         for(let i =0;i<this.fireBalls.length;i++)
@@ -960,7 +1013,23 @@ function ground(obj,x,y,length)  //object reference , x,ytop left corner  ,    l
         platform(obj,x,y+(32*i),length,21);
 }
 
-function enemyBlockers(obj, x, y, left, right) {
+function cave(obj,x,y,length,height)  //object reference , x,ytop left corner  ,    length of ground ,height of ground
+{
+    if(height>1)
+    {
+        platform(obj,x,y,length,43);
+        for(let i =1;i<height-1;i++)
+            platform(obj,x,y+(32*i),length,47);
+        platform(obj,x,y+(32*(height-1)),length,51);
+    }
+    else
+    {
+        platform(obj,x,y,length,55);
+    }
+}
+
+function enemyBlockers(obj, x, y, left, right) 
+{
     obj.static.push(returnTile(x-left,y,35));
     obj.static.push(returnTile(x+right,y,35));
 };
@@ -971,6 +1040,12 @@ function fill(obj,x,y,length,height, id) //object reference , x,ytop left corner
         platform(obj,x,y+(32*i),length,id);
 }
 
+function lava(obj,x,y,length) //object reference , x,ytop left corner,  length castle ,height of castle
+{
+    for(let i =0;i<length;i++)
+            obj.static.push(returnTile(x+(i*32),y,59));
+}
+
 function castle(obj,x,y,length,height) //object reference , x,ytop left corner,  length castle ,height of castle
 {
     for(let i =0;i<height;i++)
@@ -979,7 +1054,7 @@ function castle(obj,x,y,length,height) //object reference , x,ytop left corner, 
 
 function sky(obj)
 {
-    let num = Math.ceil(obj.maxCamera[0]/512/1.5);
+    let num = Math.ceil(obj.maxCamera[0]/512);
     let num2 = Math.ceil(obj.maxCamera[1]/64);
 
     for(let i = 0;i<num;i++)
@@ -1001,6 +1076,15 @@ function sky(obj)
     for(let i = 0;i<Math.ceil(((num2-3)*num)/(3/2));i++)
         skySurface.drawImage(tilesImage,tileList[6].x,tileList[6].y,tileList[6].w,tileList[6].h,
             (i%num)*512,320+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64)+(Math.floor(i/num)*52),tileList[6].w*2,tileList[6].h*2);
+}
+
+function caveBack(obj)
+{
+    let num = Math.ceil(obj.maxCamera[0]/1536);
+    let num2 = Math.ceil(obj.maxCamera[1]/864);
+    for(let i = 0;i<num2;i++)
+        for(let i2 = 0;i2<num;i2++)
+            skySurface.drawImage(caveImage,0,0,512,288,1536*i2,864*i,1536,864);
 }
 
 function castleBackLight(obj,x,y,w,h) //object reference , x,ytop left corner,  length castle background ,height of castle background

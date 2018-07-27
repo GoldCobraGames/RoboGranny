@@ -30,9 +30,12 @@ let tilesImage = new Image();//background and enemy elements
 let characterImage = new Image();//character sprites
 let heartImage = new Image();//used for health meter and health pickup
 let explosionImage = new Image();//used for explosions when character projectiles die
+let caveImage = new Image();//used for explosions when character projectiles die
+
 
 explosionImage.src = "data/explosion.png";
 powerUpImage.src = "data/spriteSheet.png";
 heartImage.src = "data/hearts.png";
 characterImage.src = "data/characters.png";
 tilesImage.src = "data/mainSpriteSheet.png";
+caveImage.src = "data/cave.png";
