@@ -368,11 +368,11 @@ function level3() {
     castle(obj, 532, 1040, 3, 1);
     castle(obj, 532, 1072, 2, 1);
 
-    obj.active.push(rotatingFire(380,832,6,270,10));
+    obj.active.push(rotatingFire(380,732,6,270,8));
 
-    obj.active.push(rotatingFire(380,628,4,120,8));
-    obj.active.push(rotatingFire(380,628,4,240,8));
-    obj.active.push(rotatingFire(380,628,4,360,8));
+    obj.active.push(rotatingFire(330,500,5,120,12));
+    obj.active.push(rotatingFire(330,500,5,240,12));
+    obj.active.push(rotatingFire(330,500,5,360,12));
 
     castle(obj, 0, 960, 17, 5);
 

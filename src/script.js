@@ -70,7 +70,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             //nextLevel(0,50,920);
-            nextLevel(1,250,154);
+            nextLevel(3,150,912);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
