@@ -70,7 +70,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             nextLevel(0,50,920);
-            //nextLevel(1,1650, 612);
+            //nextLevel(2,20, 612);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -262,20 +262,30 @@ function fineCollision(x1,y1,w1,h1,x2,y2,w2,h2)//will use penetration testing to
         character.grounded();        
         character.moveVector[1]  = 0;
         character.coordinates[1]  -= t_collision;
-        if(Math.abs(t_collision)>16)
-            character.respawn();
+        if(Math.abs(t_collision)>5)
+            character.crushed ++;
     }
     else if (b_collision < t_collision && b_collision < l_collision && b_collision < r_collision && character.moveVector[1]<=0)
     {
         character.moveVector[1]  = 0;
         character.coordinates[1]  += b_collision;
+        if(Math.abs(b_collision)>5)
+            character.crushed ++;
     }
     else if (l_collision < r_collision && l_collision < t_collision && l_collision < b_collision && character.moveVector[0]>=0)
+    {
         character.coordinates[0]  -= l_collision;
+        character.moveVector[0]  = 0;
+        if(Math.abs(l_collision)>5)
+            character.crushed ++;
+    }
     else if (r_collision < l_collision && r_collision < t_collision && r_collision < b_collision && character.moveVector[0]<=0)
+    {
+        character.moveVector[0]  = 0;
         character.coordinates[0]  += r_collision;
-
-    
+        if(Math.abs(r_collision)>5)
+            character.crushed ++;
+    }
 }
 
 function resetGame() //retuns to main menu

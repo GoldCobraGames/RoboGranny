@@ -12,10 +12,8 @@ function createCharacter() //generates and contains game character
     obj.jumpPowerup = false;
     obj.jumpTap = false;
         
-    obj.dashPowerup = false;
+    obj.dashPowerup = true;
     obj.dashTap = false;
-    obj.dashGround = false;
-    obj.dashCd = 0;
     
     obj.state = 1;
     obj.animationFrame = 1;
@@ -23,17 +21,23 @@ function createCharacter() //generates and contains game character
     obj.health = 6;
     obj.maxHealth = 6;
     
+    obj.maxAmmo = 5;    
+    obj.ammo = 5;
+    obj.ammoTimer = 0;
+
     obj.respawnLocation = [0,0];
     obj.dead = false;
 
     obj.projectiles = [];
-    obj.projectilePowerup = false;
+    obj.projectilePowerup = true;
     obj.projectileTap = false;
     
     obj.iFrames = 0;
     obj.ladder = false;
     obj.ladderDir = 0;
     
+    obj.crushed = 0;
+
     obj.jump = function()
     {
         if((this.jump1 && this.jumpTap) || (this.jump2 && this.jumpTap))
@@ -61,19 +65,16 @@ function createCharacter() //generates and contains game character
         character.jump1 = true;
         if(character.jumpPowerup || this.ladder)
             character.jump2 = true;
-        if(character.dashCd < 0)
-            character.dashGround = true;
     }
     
     obj.dash = function()
     {
-        if(this.dashTap && this.dashPowerup && this.dashGround && this.dashCd < 0)
+        if(this.dashTap && this.dashPowerup && this.ammo > 0 )
         {
-            this.dashCd = 60;
             DashSFX.play();
+            this.ammo--;
             this.dashTap = false;
-            this.dashGround = false;
-            this.moveVector[0] += 40*Math.sign(this.directionFacing);
+            this.moveVector[0] = 40*Math.sign(this.directionFacing);
 
         }
                          
@@ -102,8 +103,13 @@ function createCharacter() //generates and contains game character
             this.dead = true;
             messageSystem("       You Are Dead        Press Enter to continue");
         }
-        if(this.dashCd >= 0) //dash timer
-            this.dashCd--;
+        if(this.ammo < this.maxAmmo)
+            this.ammoTimer++;
+        if(this.ammoTimer > 120)
+        {
+            this.ammo++;
+            this.ammoTimer=0;
+        }
         if(this.iFrames > 0) //invincibility frame timer
             this.iFrames--;
         this.jump1 = false; //prevents using first jump after leaving platform
@@ -114,6 +120,9 @@ function createCharacter() //generates and contains game character
             this.directionFacing = -1;
         else if (this.moveVector[0] > 0)
             this.directionFacing = 1;
+        if(this.crushed >= 2)
+            this.respawn();
+        this.crushed = 0;
     };
 
     obj.applyCollision = function()
@@ -168,8 +177,9 @@ function createCharacter() //generates and contains game character
 
     obj.shoot = function()
     {
-        if(this.projectileTap && this.projectilePowerup)
+        if(this.projectileTap && this.projectilePowerup && this.ammo >0)
         {
+            this.ammo--;
             this.projectiles.push(projectile(this.coordinates[0],this.coordinates[1],this.directionFacing));
             this.projectileTap = false;
         }
@@ -206,10 +216,10 @@ function createCharacter() //generates and contains game character
     };
     obj.draw = function()
     {
-        /*onScreenSurface.fillStyle = 'white';
+        onScreenSurface.fillStyle = 'white';
         onScreenSurface.font = "20px Courier New";
-        onScreenSurface.fillText(this.coordinates[0].toString(), 70, 70);
-        onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
+        onScreenSurface.fillText("Ammo count: "+this.ammo.toString(), 20, 70);
+        //onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
             if(Math.abs(this.state) == 1)// on the ground 
