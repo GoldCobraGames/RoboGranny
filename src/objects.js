@@ -69,17 +69,10 @@ function createCharacter() //generates and contains game character
     
     obj.dash = function()
     {
-<<<<<<< HEAD
         if(this.dashTap && this.dashPowerup && this.ammo > 1 )
         {
             DashSFX.play();
             this.ammo-=2;
-=======
-        if(this.dashTap && this.dashPowerup && this.ammo > 0 )
-        {
-            DashSFX.play();
-            this.ammo--;
->>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
             this.dashTap = false;
             this.moveVector[0] = 40*Math.sign(this.directionFacing);
 
@@ -112,11 +105,7 @@ function createCharacter() //generates and contains game character
         }
         if(this.ammo < this.maxAmmo)
             this.ammoTimer++;
-<<<<<<< HEAD
         if(this.ammoTimer > 30)
-=======
-        if(this.ammoTimer > 120)
->>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
         {
             this.ammo++;
             this.ammoTimer=0;
@@ -131,11 +120,7 @@ function createCharacter() //generates and contains game character
             this.directionFacing = -1;
         else if (this.moveVector[0] > 0)
             this.directionFacing = 1;
-<<<<<<< HEAD
         if(this.crushed >= 4)
-=======
-        if(this.crushed >= 2)
->>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
             this.respawn();
         this.crushed = 0;
     };
@@ -234,14 +219,8 @@ function createCharacter() //generates and contains game character
     {
         onScreenSurface.fillStyle = 'white';
         onScreenSurface.font = "20px Courier New";
-<<<<<<< HEAD
         onScreenSurface.fillText(this.coordinates[0].toString(), 70, 70);
         onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
-        
-=======
-        onScreenSurface.fillText("Ammo count: "+this.ammo.toString(), 20, 70);
-        //onScreenSurface.fillText(this.coordinates[1].toString(), 70, 100);//*/
->>>>>>> abcbe21852159326ed48e4df0820592da8ee0eee
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
             if(Math.abs(this.state) == 1)// on the ground 
