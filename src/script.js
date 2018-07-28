@@ -70,7 +70,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             //nextLevel(0,50,920);
-            nextLevel(3,150,912);
+            nextLevel(1,150,112);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -298,18 +298,11 @@ function nextLevel(goto,x,y) //loads specified level at specified coordinates al
     currentRoom = generateRoomMap(goto);
     character.coordinates[0] = x;
     character.coordinates[1] = y;
-    character.respawnLocation = [character.coordinates[0],character.coordinates[1]];
+    character.respawnLocation[0] = character.coordinates[0];
+    character.respawnLocation[1] = character.coordinates[1];
     character.moveVector[0] = 0;
     character.moveVector[1] = 0;
-    camera.coordinates = [character.coordinates[0],character.coordinates[1]];
-    if(camera.coordinates[0]<0)
-        camera.coordinates[0] = 1;
-    if(camera.coordinates[0]>currentRoom.maxCamera[0]-600)
-        camera.coordinates[0] = currentRoom.maxCamera[0]-600;
-    if(camera.coordinates[1]<0)
-        camera.coordinates[1] = 1;
-    if(camera.coordinates[1]>currentRoom.maxCamera[1]-600)
-        camera.coordinates[1] = currentRoom.maxCamera[1]-600;
+    camera.snap(character.coordinates[0]-300,character.coordinates[1]-300);
     generateBackground();
 }
 
@@ -320,14 +313,28 @@ function createCamera() // camera object behaves diferently from all other objec
 	obj.tick = function ()
 	{
 		if(character.coordinates[0]-this.coordinates[0] > 300 && this.coordinates[0] < currentRoom.maxCamera[0]-599)
-			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);
+			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/50);
 		if(character.coordinates[0]-this.coordinates[0] < 300 && this.coordinates[0] > 1)
-			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);		
+			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/50);		
 		if(character.coordinates[1]-this.coordinates[1] > 300 && this.coordinates[1] < currentRoom.maxCamera[1]-599)
-			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
+			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/50);
 		if(character.coordinates[1]-this.coordinates[1] < 300 && this.coordinates[1] > 1)
-			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
+			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/50);
 	};
+    obj.snap = function (x,y)
+	{
+        camera.coordinates[0] = x;
+        camera.coordinates[1] = y;
+        if(camera.coordinates[0]<0)
+            camera.coordinates[0] = 1;
+        if(camera.coordinates[0]>currentRoom.maxCamera[0]-600)
+            camera.coordinates[0] = currentRoom.maxCamera[0]-600;
+        if(camera.coordinates[1]<0)
+            camera.coordinates[1] = 1;
+        if(camera.coordinates[1]>currentRoom.maxCamera[1]-600)
+            camera.coordinates[1] = currentRoom.maxCamera[1]-600;
+	};
+
 	return obj;
 }
 
