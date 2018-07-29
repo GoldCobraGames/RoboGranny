@@ -205,14 +205,14 @@ function level1()
     obj.active.push(fallingPlatform(540,425,110,1));
 
     
-    obj.static.push(returnTile(570,195,35)); //enemy blocker
-    obj.static.push(returnTile(945,195,35)); // enemy blocker
+    obj.static.push(returnTile(570,225,35)); //enemy blocker
+    obj.static.push(returnTile(945,225,35)); // enemy blocker
 
     obj.static.push(returnTile(780,765,35)); //enemy blocker
     obj.static.push(returnTile(1113,765,35)); // enemy blocker
 
     
-    obj.active.push(bird(600,183));
+    obj.active.push(bird(600,225));
     obj.active.push(slime(900,753));
     obj.active.push(rotatingFire(1828,330,8,55,10));
 

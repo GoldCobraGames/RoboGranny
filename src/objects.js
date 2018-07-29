@@ -1,7 +1,4 @@
 //**************************** GAME OBJECTS **************************************
-let lastAngle = 0;
-let lastPoint = [0,0];
-
 function createCharacter() //generates and contains game character
 {
     let obj = {};
@@ -74,8 +71,6 @@ function createCharacter() //generates and contains game character
         let bounceAngle = Math.atan2(y-(this.coordinates[1]+23),x-(this.coordinates[0]+15));
         this.moveVector[0] = -20*Math.cos(bounceAngle);
         this.moveVector[1] = -5*Math.sin(bounceAngle);
-        lastAngle = bounceAngle;
-        lastPoint = [x,y];
     }
 
     obj.dash = function()
@@ -95,7 +90,7 @@ function createCharacter() //generates and contains game character
     {
         if(this.iFrames <= 0)
         {
-            //this.health--;
+            this.health--;
             this.iFrames = 60;
             return true;
         }
@@ -106,10 +101,10 @@ function createCharacter() //generates and contains game character
     obj.respawn = function()
     {
             FallSFX.play();
-            character.hurt();
-            character.coordinates[0] = character.respawnLocation[0];
-            character.coordinates[1] = character.respawnLocation[1];
-            character.moveVector = [0,0];
+            this.hurt();
+            this.coordinates[0] = character.respawnLocation[0];
+            this.coordinates[1] = character.respawnLocation[1];
+            this.moveVector = [0,0];
             //camera.snap(character.coordinates[0]-300,character.coordinates[1]-300);
     };
     
@@ -237,15 +232,10 @@ function createCharacter() //generates and contains game character
     };
     obj.draw = function()
     {
-        onScreenSurface.fillStyle = 'white';
+        /*onScreenSurface.fillStyle = 'white';
         onScreenSurface.font = "20px Courier New";
         onScreenSurface.fillText(lastPoint[0].toString(), 70, 70);
-        onScreenSurface.fillText(lastPoint[0].toString(), 70, 100);
-        onScreenSurface.fillText(lastAngle.toString(), 70, 150);
-        
-        onScreenSurface.fillText(Math.cos(lastAngle).toString(), 70, 180)
-        
-        //*/
+        onScreenSurface.fillText(lastPoint[0].toString(), 70, 100);//*/
                 
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
@@ -381,11 +371,12 @@ function slime(x,y)
     };
     
     obj.colliding = function(){
-        if(character.hurt() && !this.dead)
-        {
-            FallSFX.play();		
-            character.bounce(this.coordinates[0]+16,this.coordinates[1]+16)
-        }
+        if(!this.dead)
+            if(character.hurt())
+            {
+                FallSFX.play();		
+                character.bounce(this.coordinates[0]+16,this.coordinates[1]+16)
+            }
     };
 
     obj.draw = function()
@@ -485,15 +476,10 @@ function bird(x,y)
 
     obj.diveState1 = function()
     {
-        this.diveAngle = Math.atan2(this.targetCoordinates[0]-this.coordinates[0]-16,this.targetCoordinates[1]-this.coordinates[1]-29);
-        this.coordinates[0] += 3*Math.sin(this.diveAngle);
-        this.coordinates[1] += 3*Math.cos(this.diveAngle);
+        this.coordinates[0] += 3*Math.cos(this.diveAngle);
+        this.coordinates[1] += 3*Math.sin(this.diveAngle);
         if(roughCollision(this.coordinates[0]+16,this.coordinates[1]+29,10,10,this.targetCoordinates[0],this.targetCoordinates[1],10,10))
                 this.diveTimer++;
-        if(this.diveAngle > 0)
-            this.visualState = true;
-        else
-            this.visualState = false;
     };
     
     obj.diveState2 = function()
@@ -507,13 +493,13 @@ function bird(x,y)
     
     obj.recoveryState = function()
     {
-        this.diveAngle = Math.atan2(this.returnCoordinates[0]-this.coordinates[0],this.returnCoordinates[1]-this.coordinates[1]);
-        this.coordinates[0] += 1*Math.sin(this.diveAngle);
-        this.coordinates[1] += 1*Math.cos(this.diveAngle);
-        if(this.diveAngle > 0)
-            this.visualState = true;
-        else
+        this.diveAngle = Math.atan2(this.returnCoordinates[1]-this.coordinates[1],this.returnCoordinates[0]-this.coordinates[0]);
+        this.coordinates[0] += 1.5*Math.cos(this.diveAngle);
+        this.coordinates[1] += 1.5*Math.sin(this.diveAngle);
+        if(Math.abs(this.diveAngle) > Math.PI/2 && Math.abs(this.diveAngle) < (3/2)*Math.PI )
             this.visualState = false;
+        else
+            this.visualState = true;
         if(roughCollision(this.coordinates[0],this.coordinates[1],10,10,this.returnCoordinates[0],this.returnCoordinates[1],10,10))
         {
             this.diveState = false;
@@ -527,10 +513,15 @@ function bird(x,y)
         {
             this.diveState = true;
             this.targetCoordinates = [character.coordinates[0]+15,character.coordinates[1]+23]
-            if(this.diveAngle > 0)
-                this.visualState = true;
-            else
+            this.diveAngle = Math.atan2(this.targetCoordinates[1]-this.coordinates[1]-29,this.targetCoordinates[0]-this.coordinates[0]-16);
+            this.targetCoordinates[0] += 100*Math.cos(this.diveAngle);
+            this.targetCoordinates[1] += 100*Math.sin(this.diveAngle);
+            this.diveAngle = Math.atan2(this.targetCoordinates[1]-this.coordinates[1]-29,this.targetCoordinates[0]-this.coordinates[0]-16);
+            if(Math.abs(this.diveAngle) > Math.PI/2 && Math.abs(this.diveAngle) < (3/2)*Math.PI )
                 this.visualState = false;
+            else
+                this.visualState = true;
+
             }
     };
     
@@ -564,17 +555,22 @@ function bird(x,y)
     
     obj.colliding = function()
     {
-        if(character.hurt() && !this.dead)
-        {
-            FallSFX.play();		
-            character.bounce(this.coordinates[0]+16,this.coordinates[1]+29)
-        }
+        if(!this.dead)
+            if(character.hurt())
+            {
+                FallSFX.play();		
+                character.bounce(this.coordinates[0]+16,this.coordinates[1]+29)
+            }
     };
     
     obj.draw = function()
     {
         onScreenSurface.fillStyle = 'red';
         onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
+        onScreenSurface.fillStyle = 'white';
+        onScreenSurface.font = "20px Courier New";
+        onScreenSurface.fillText(this.diveAngle.toString(), 70, 70);
+        //onScreenSurface.fillText(lastPoint[0].toString(), 70, 100);//*/
 
         if(!this.dead)
         {
