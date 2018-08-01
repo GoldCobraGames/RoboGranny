@@ -66,15 +66,17 @@ function mainMenu() //main menu loop generates new character and map upon ending
         waitTimer--;
         if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 0)
         {
+            HealSFX.play();
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             //nextLevel(0,50,920);
-            nextLevel(1,150,112);
+            nextLevel(4,880,30);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
         {
+            HealSFX.play();
             messageSystem(" Welcome to The Tutorial -------------------------  Move your character    left and right with the         arrow keys                                   Jump with the up arrow                          The character hp is shown    in the top left                                 collect floating icons  for powerups and health ------------------------- Press Enter to Continue");
             window.requestAnimationFrame(mainMenu);
 
@@ -82,22 +84,34 @@ function mainMenu() //main menu loop generates new character and map upon ending
         else
         {
             drawBackground();
-            onScreenSurface.fillStyle = 'white';
-            onScreenSurface.font = "bold 30px Courier New";
-            onScreenSurface.fillText("Adventure Quest", 150, 260);
-            onScreenSurface.font = "italic 15px Courier New";
-            onScreenSurface.fillText("Start", 250, 360);
-            onScreenSurface.fillText("Instructions", 250, 390);
+            onScreenSurface.strokeStyle = '#091534';
+            onScreenSurface.lineJoin = "round";
+            onScreenSurface.lineWidth = 30;
+            onScreenSurface.strokeRect(135,220,300,200);
+            onScreenSurface.fillStyle = '#678FFE';
+            onScreenSurface.fillRect(135,220,300,200);
+            onScreenSurface.fillStyle = '#091534';
+            onScreenSurface.font = "bold 30px Palatino Linotype";
+            onScreenSurface.fillText("Adventure Quest", 170, 260);
+            onScreenSurface.font = "italic 15px Palatino Linotype";
+            onScreenSurface.fillText("Start", 240, 360);
+            onScreenSurface.fillText("Instructions", 240, 390);
             if(Math.floor(waitTimer/30)%2)
             {
                 onScreenSurface.beginPath();
-                onScreenSurface.arc(240, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
+                onScreenSurface.arc(230, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
                 onScreenSurface.fill();
             }
             if(keysPressed.includes(38))//up
+            {
                 menuCursor--;
+                JumpSFX.play();
+            }
             else if (keysPressed.includes(40))
+            {
                 menuCursor++;
+                JumpSFX.play();
+            }
             if(menuCursor<0)
                 menuCursor =0;
             if(menuCursor>1)
@@ -147,7 +161,7 @@ function generateBackground()// draws background layer should only be called dur
             tileList[currentRoom.static[i].tileNum].w,tileList[currentRoom.static[i].tileNum].h,
             currentRoom.static[i].x,currentRoom.static[i].y,
             tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
-        if(tileList[currentRoom.static[i].tileNum].passable == -1)
+        /*if(tileList[currentRoom.static[i].tileNum].passable == -1)
             {
                 offScreenSurface.fillStyle = 'green';
                 offScreenSurface.fillRect(currentRoom.static[i].x,currentRoom.static[i].y,

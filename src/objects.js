@@ -8,10 +8,10 @@ function createCharacter() //generates and contains game character
     
     obj.jump1 = false;
     obj.jump2 = false;
-    obj.jumpPowerup = false;
+    obj.jumpPowerup = true;
     obj.jumpTap = false;
         
-    obj.dashPowerup = true;
+    obj.dashPowerup = false;
     obj.dashTap = false;
     
     obj.state = 1;
@@ -68,7 +68,7 @@ function createCharacter() //generates and contains game character
     
     obj.bounce = function(x,y)
     {
-        let bounceAngle = Math.atan2(y-(this.coordinates[1]+23),x-(this.coordinates[0]+15));
+        let bounceAngle = Math.atan2(y-(this.coordinates[1]+15),x-(this.coordinates[0]+23));
         this.moveVector[0] = -20*Math.cos(bounceAngle);
         this.moveVector[1] = -5*Math.sin(bounceAngle);
     }
@@ -132,7 +132,7 @@ function createCharacter() //generates and contains game character
             this.directionFacing = -1;
         else if (this.moveVector[0] > 0)
             this.directionFacing = 1;
-        if(this.crushed >= 4)
+        if(this.crushed >= 5)
             this.respawn();
         this.crushed = 0;
     };
@@ -158,6 +158,13 @@ function createCharacter() //generates and contains game character
                         this.grounded();
                         this.moveVector[1] = 0; //gravity
                         break;
+                    case 4:
+                        this.hurt();
+                        FallSFX.play();		
+                        this.grounded();
+                        this.bounce(this.coordinates[0]+23,this.coordinates[1]+35);
+                        break;
+
                     }
 
                 }
@@ -219,7 +226,6 @@ function createCharacter() //generates and contains game character
     
     obj.tick = function ()
     {
-        this.jump2 = true;
         this.applyMovement(); //i am applying the movement vector in 2 half steps and checking collision after each to attemp to reduce tunneling
         this.applyCollision();
         userInputHandler();//user input 
@@ -232,11 +238,6 @@ function createCharacter() //generates and contains game character
     };
     obj.draw = function()
     {
-        /*onScreenSurface.fillStyle = 'white';
-        onScreenSurface.font = "20px Courier New";
-        onScreenSurface.fillText(lastPoint[0].toString(), 70, 70);
-        onScreenSurface.fillText(lastPoint[0].toString(), 70, 100);//*/
-                
         if(this.iFrames%2 == 0) //strobes player for invincibility frames
         {
             if(Math.abs(this.state) == 1)// on the ground 
@@ -295,8 +296,8 @@ function door(x,y,w,h,level,cx,cy) // x,y location    width,height of door   des
     };
     obj.draw = function()
     {
-        onScreenSurface.fillStyle = 'red';
-        onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
+       // onScreenSurface.fillStyle = 'red';
+       // onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
     };
     return obj;
 }
@@ -311,11 +312,12 @@ function breakable(x,y,num)
         for(let i = 0;i<character.projectiles.length;i++)
             if (roughCollision(this.coordinates[0],this.coordinates[1],32,96,character.projectiles[i].coordinates[0],character.projectiles[i].coordinates[1],20,20))
             {
-                    BreakSFX.play();						
-                    currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
-                    levelPreventSpawn[this.num]= true;
-                    character.projectiles.splice(character.projectiles.indexOf(i), 1);
-                    currentRoom.active.push(explosion(this.coordinates[0],this.coordinates[1]));
+                BreakSFX.play();						
+                currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
+                levelPreventSpawn[this.num]= true;
+                character.projectiles.splice(i, 1);
+                currentRoom.active.push(explosion(this.coordinates[0],this.coordinates[1]));
+                i--;
             }
     };
     
@@ -335,7 +337,8 @@ function slime(x,y)
     let obj = {};
     obj.coordinates = [x,y,32,32];
     obj.direction = true;
-    obj.bounceAngle = 0;
+    if(Math.floor(Math.random()*10)%2 == 0)
+        obj.direction = false;
     obj.animationTimer = Math.floor(Math.random()*60);
     obj.dead = false;
     obj.tick = function()
@@ -348,9 +351,9 @@ function slime(x,y)
                     SlimeSFX.play();
                     this.dead = true;
                     this.animationTimer =0;
-                    character.projectiles.splice(character.projectiles.indexOf(i), 1);
+                    character.projectiles.splice(i, 1);
                     currentRoom.active.push(explosion(this.coordinates[0],this.coordinates[1]));
-                    i = character.projectiles.length;
+                    i--;
                 }
             for (let i= 0; i<currentRoom.static.length; i++)
                 if(tileList[currentRoom.static[i].tileNum].passable == -1)
@@ -363,7 +366,11 @@ function slime(x,y)
         }
         else
             if(this.animationTimer == 59)
+            {
+                if(Math.floor(Math.random()*50)%(character.health+1)== 0)
+                    currentRoom.active.push(healthPickup(this.coordinates[0],this.coordinates[1]-10,0));
                 currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
+            }
         
         this.animationTimer ++;
         if(this.animationTimer > 10000)
@@ -418,7 +425,6 @@ function bird(x,y)
     obj.visualState = true;
     obj.diveTimer = 0;
     obj.characterDistance = 500;
-    obj.bounceAngle = 0;
     obj.diveAngle = 0;
     obj.animationTimer = 0;
     obj.dead = false;
@@ -533,8 +539,11 @@ function bird(x,y)
                 BirdSFX.play();
                 this.dead = true;
                 this.animationTimer = 0;
-                character.projectiles.splice(character.projectiles.indexOf(i), 1);
+                if(Math.floor(Math.random()*50)%(character.health+1)== 0)
+                    currentRoom.active.push(healthPickup(this.coordinates[0],this.coordinates[1]-10,0));
+                character.projectiles.splice(i, 1);
                 currentRoom.active.push(explosion(this.coordinates[0],this.coordinates[1]));
+                i--;
             }
         for (let i= 0; i<currentRoom.static.length; i++)
         {
@@ -565,13 +574,6 @@ function bird(x,y)
     
     obj.draw = function()
     {
-        onScreenSurface.fillStyle = 'red';
-        onScreenSurface.fillRect(this.coordinates[0]-camera.coordinates[0],this.coordinates[1]-camera.coordinates[1],this.coordinates[2],this.coordinates[3]);
-        onScreenSurface.fillStyle = 'white';
-        onScreenSurface.font = "20px Courier New";
-        onScreenSurface.fillText(this.diveAngle.toString(), 70, 70);
-        //onScreenSurface.fillText(lastPoint[0].toString(), 70, 100);//*/
-
         if(!this.dead)
         {
             if(!this.visualState)
@@ -587,7 +589,6 @@ function bird(x,y)
                     onScreenSurface.drawImage(tilesImage,397-(32*(Math.floor(this.animationTimer/6)%5)),136,32,44,Math.floor(this.coordinates[0]-camera.coordinates[0]-16), Math.floor(this.coordinates[1]-camera.coordinates[1]-38),64,88);
                 else
                     onScreenSurface.drawImage(tilesImage,397-(32*2),136,32,44,Math.floor(this.coordinates[0]-camera.coordinates[0]-16), Math.floor(this.coordinates[1]-camera.coordinates[1]-38),64,88);
-
             }
         }
         else
@@ -722,7 +723,6 @@ function rotatingFire(x,y,length,startAngle,speed)// x,y, length of fire stick, 
 {
     let obj = {};
     obj.coordinates = [x,y,32,32];
-    obj.collision = true;
     obj.hitbox = [32,32];
     obj.rotationAngle = startAngle*(Math.PI/180);
     obj.speed = (Math.PI/15)/speed;
@@ -756,12 +756,48 @@ function rotatingFire(x,y,length,startAngle,speed)// x,y, length of fire stick, 
     return obj;
 }
 
+function jumpingFire(x,y,height,delay)// x,y, length of fire stick, startAngle, speed in frames to make a full rotation
+{
+    let obj = {};
+    obj.coordinates = [x,y,32,32];
+    obj.velocity = 0;
+    obj.timer = 0;
+    obj.jump = height;
+    obj.delay = delay;
+    obj.fireBalls = [];
+    obj.fireBalls.push(fireBall(x,y));
+    
+    obj.tick = function()
+    {
+        this.timer++;
+        this.fireBalls[0].tick();
+        if(this.timer<(this.delay*10))
+            this.velocity=0;
+        else if(this.timer == (this.delay*10))
+            this.velocity = this.jump;
+        else if(this.timer < (this.delay*10)+200)
+            this.velocity -= (this.jump/(100));
+        else
+            this.timer = 0;
+        this.fireBalls[0].coordinates[1] -= this.velocity;
+    };
+    obj.colliding = function(){};
+    obj.draw = function()
+    {
+        if(this.timer > (this.delay*10))
+            this.fireBalls[0].draw();
+        if((this.timer > (this.delay*10) &&  this.timer < (this.delay*10)+30 )||( this.timer > 0 && this.timer < 30))
+            onScreenSurface.drawImage(tilesImage,108,1011,23,13,Math.floor(this.coordinates[0]-camera.coordinates[0]-20),
+            Math.floor(this.coordinates[1]-camera.coordinates[1]-26),46,26);
+
+    };
+    return obj;
+}
+
 function fireBall(x,y)// x,y
 {
     let obj = {};
-    obj.coordinates = [x,y];
-    obj.bounceAngle = 0;
-          
+    obj.coordinates = [x,y];          
     obj.tick = function()
     {
         if (roughCollision(character.coordinates[0],character.coordinates[1],character.coordinates[2],character.coordinates[3],
@@ -787,7 +823,6 @@ function fireBall(x,y)// x,y
 function fallingPlatform(x,y,time,type)
 {
     let obj = {};
-    obj.collision = true;
     obj.coordinates = [x,y,32,32];
     obj.start = [x,y];
     obj.time = time;
@@ -839,6 +874,8 @@ function fallingPlatform(x,y,time,type)
             onScreenSurface.drawImage(tilesImage,48,672,16,16,Math.floor(this.coordinates[0]-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),32,32);
         if(type == 2)
             onScreenSurface.drawImage(tilesImage,48,592,16,16,Math.floor(this.coordinates[0]-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),32,32);
+        if(type == 3)
+            onScreenSurface.drawImage(tilesImage,48,1040,16,16,Math.floor(this.coordinates[0]-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),32,32);
     };
     return obj;
 }
@@ -846,7 +883,6 @@ function fallingPlatform(x,y,time,type)
 function doubleJumpPowerUp(x,y,num)
 {
     let obj = {};
-    obj.collision = false;
     obj.floatTimer = Math.floor(Math.random()*100);
     obj.coordinates = [x,y-(obj.floatTimer*0.1),32,32];
     obj.direction = false;
@@ -887,7 +923,6 @@ function doubleJumpPowerUp(x,y,num)
 function dashPowerUp(x,y,num)
 {
     let obj = {};
-    obj.collision = false;
     obj.floatTimer = Math.floor(Math.random()*100);
     obj.coordinates = [x,y-(obj.floatTimer*0.1),32,32];
     obj.direction = false;
@@ -910,7 +945,7 @@ function dashPowerUp(x,y,num)
     obj.colliding = function()
     {
             character.dashPowerup = true;
-            messageSystem("    You Have Picked up           an ability            Hit Shift to dash    and escape danger     Press Enter to continue");
+            messageSystem("    You Have Picked up           an ability            Hit Shift to dash   and gain a burst of speed  Press Enter to continue");
             PowerupSFX.play();
             levelPreventSpawn[this.num]= true;
             currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
@@ -927,7 +962,6 @@ function dashPowerUp(x,y,num)
 function shootPowerUp(x,y,num)
 {
     let obj = {};
-    obj.collision = false;
     obj.floatTimer = Math.floor(Math.random()*100);
     obj.coordinates = [x,y-(obj.floatTimer*0.1),32,32];
     obj.num = num;
@@ -968,7 +1002,6 @@ function shootPowerUp(x,y,num)
 function healthPickup(x,y,num)
 {
     let obj = {};
-    obj.collision = false;
     obj.floatTimer = Math.floor(Math.random()*100);
     obj.coordinates = [x,y-(obj.floatTimer*0.1),32,32];
     obj.num = num;
@@ -1008,6 +1041,45 @@ function healthPickup(x,y,num)
     return obj;
 }
 
+function fullHealthPickup(x,y,num)
+{
+    let obj = {};
+    obj.floatTimer = Math.floor(Math.random()*100);
+    obj.coordinates = [x,y-(obj.floatTimer*0.1),32,32];
+    obj.num = num;
+    obj.direction = false;
+
+    obj.tick = function()
+    {
+        if (this.floatTimer >= 100)
+        {
+            this.floatTimer = 0;
+            this.direction = !this.direction;
+        }
+        else
+            this.floatTimer++;
+        if(this.direction)
+            this.coordinates[1] += 0.1;
+        else
+            this.coordinates[1] -= 0.1;
+    };
+    
+    obj.colliding = function()
+    {
+        character.health = character.maxHealth;
+        HealSFX.play();						
+        currentRoom.active.splice(currentRoom.active.indexOf(this), 1);
+        levelPreventSpawn[this.num]= true;
+    };
+
+    obj.draw = function()
+    {
+        onScreenSurface.drawImage(heartImage,0,0,16,16,Math.floor(this.coordinates[0]-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),16*2,16*2);
+    };
+
+    return obj;
+}
+
 function explosion(x,y)
 {
     let obj = {};
@@ -1028,190 +1100,4 @@ function explosion(x,y)
             Math.floor(this.coordinates[0]-(this.ticks/2)-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),32,32);
     };
     return obj;
-}
-
-// ************** BELOW THIS POINT ARE SETUP METHODS FOR GENERATING LEVELS ******************
-function ground(obj,x,y,length)  //object reference , x,ytop left corner  ,    length of ground
-{
-    let height = Math.ceil((obj.maxCamera[1]-y)/32);
-    platform(obj,x,y,length,13);
-    for(let i =1;i<height;i++)
-        platform(obj,x,y+(32*i),length,21);
-}
-
-function cave(obj,x,y,length,height)  //object reference , x,ytop left corner  ,    length of ground ,height of ground
-{
-    if(height>1)
-    {
-        platform(obj,x,y,length,43);
-        for(let i =1;i<height-1;i++)
-            platform(obj,x,y+(32*i),length,47);
-        platform(obj,x,y+(32*(height-1)),length,51);
-    }
-    else
-    {
-        platform(obj,x,y,length,55);
-    }
-}
-
-function enemyBlockers(obj, x, y, left, right) 
-{
-    obj.static.push(returnTile(x-left,y,35));
-    obj.static.push(returnTile(x+right,y,35));
-};
-
-function fill(obj,x,y,length,height, id) //object reference , x,ytop left corner,  length castle ,height of castle
-{
-    for(let i =0;i<height;i++)
-        platform(obj,x,y+(32*i),length,id);
-}
-
-function lava(obj,x,y,length) //object reference , x,ytop left corner,  length castle ,height of castle
-{
-    for(let i =0;i<length;i++)
-            obj.static.push(returnTile(x+(i*32),y,59));
-}
-
-function castle(obj,x,y,length,height) //object reference , x,ytop left corner,  length castle ,height of castle
-{
-    for(let i =0;i<height;i++)
-        platform(obj,x,y+(32*i),length,30);
-}
-
-function sky(obj)
-{
-    let num = Math.ceil(obj.maxCamera[0]/512);
-    let num2 = Math.ceil(obj.maxCamera[1]/64);
-
-    for(let i = 0;i<num;i++)
-        skySurface.drawImage(tilesImage,tileList[0].x,tileList[0].y,tileList[0].w,tileList[0].h,512*i,0,tileList[0].w*2,tileList[0].h*2);
-    for(let i = 0;i<Math.ceil(((num2-3)*num)/3);i++)
-        skySurface.drawImage(tilesImage,tileList[1].x,tileList[1].y,tileList[1].w,tileList[1].h,(i%num)*512,64+(Math.floor(i/num)*64),tileList[1].w*2,tileList[1].h*2);
-    for(let i = 0;i<num;i++)
-        skySurface.drawImage(tilesImage,tileList[2].x,tileList[2].y,tileList[2].w,tileList[2].h,
-            512*i,64+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64),tileList[2].w*2,tileList[2].h*2);
-    for(let i = 0;i<num;i++)
-        skySurface.drawImage(tilesImage,tileList[3].x,tileList[3].y,tileList[3].w,tileList[3].h,
-            512*i,128+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64),tileList[3].w*2,tileList[3].h*2);
-    for(let i = 0;i<num;i++)
-        skySurface.drawImage(tilesImage,tileList[4].x,tileList[4].y,tileList[4].w,tileList[4].h,
-            512*i,192+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64),tileList[4].w*2,tileList[4].h*2);
-    for(let i = 0;i<num;i++)
-        skySurface.drawImage(tilesImage,tileList[5].x,tileList[5].y,tileList[5].w,tileList[5].h,
-            512*i,256+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64),tileList[5].w*2,tileList[5].h*2);
-    for(let i = 0;i<Math.ceil(((num2-3)*num)/(3/2));i++)
-        skySurface.drawImage(tilesImage,tileList[6].x,tileList[6].y,tileList[6].w,tileList[6].h,
-            (i%num)*512,320+(Math.floor(Math.ceil(((num2-3)*num)/3)/num)*64)+(Math.floor(i/num)*52),tileList[6].w*2,tileList[6].h*2);
-}
-
-function caveBack(obj)
-{
-    let num = Math.ceil(obj.maxCamera[0]/1536);
-    let num2 = Math.ceil(obj.maxCamera[1]/864);
-    for(let i = 0;i<num2;i++)
-        for(let i2 = 0;i2<num;i2++)
-            skySurface.drawImage(caveImage,0,0,512,288,1536*i2,864*i,1536,864);
-}
-
-function castleBackLight(obj,x,y,w,h) //object reference , x,ytop left corner,  length castle background ,height of castle background
-{ 
-    y=(y+((h-1)*50)-(h*64))
-    for(let i = 0;i<w;i++)
-        for(let q = 0;q<h;q++)
-            obj.static.push(returnTile(x+(i*64),y+(h*64)-(q*50),34));
-}
-
-function castleBackDark(obj,x,y,w,h) //object reference , x,ytop left corner,  length castle background ,height of castle background
-{ 
-    y=(y+((h-1)*50)-(h*64))
-    for(let i = 0;i<w;i++)
-        for(let q = 0;q<h;q++)
-            obj.static.push(returnTile(x+(i*32),y+(h*64)-(q*50),37));
-}
-
-function castleBackHoles(obj,x,y,w,h) //object reference , x,ytop left corner,  length castle background ,height of castle background
-{ 
-    for(let i = 0;i<w;i++)
-        for(let q = 0;q<h;q++)
-        {
-            if(q%2 == 0)
-            {
-                obj.static.push(returnTile(x+(i*256),y+(q*64),38));
-                obj.static.push(returnTile(x+120+(i*256),y+(q*64),39));
-            }
-            else
-            {
-                obj.static.push(returnTile(x+(i*256),y+(q*64),39));
-                obj.static.push(returnTile(x+136+(i*256),y+(q*64),38));
-            }
-        }
-}
-
-function levelBorders(obj) //applys blockers to left right and top of level and a death plane to the bottom
-{
-    for(let i = 0;i<Math.ceil(obj.maxCamera[1]/5000);i++)
-        obj.static.push(returnTile(-20,0+(i*5000),10)); // left blocker
-    for(let i = 0;i<Math.ceil(obj.maxCamera[1]/5000);i++)
-        obj.static.push(returnTile(obj.maxCamera[0],0+(i*5000),10)); // right blocker
-    for(let i = 0;i<Math.ceil(obj.maxCamera[0]/5000);i++)
-        obj.static.push(returnTile(0+(i*5000),-20,11)); // top blocker
-    for(let i = 0;i<Math.ceil(obj.maxCamera[0]/5000);i++)
-        obj.static.push(returnTile(0+(i*5000),obj.maxCamera[1]+50,12)); // bottom death plane
-}
-
-function returnTile(x,y,tileNum)
-{
-    let obj = {};
-    obj.x = x;
-    obj.y = y;
-    obj.tileNum = tileNum;
-    return obj;
-}
-
-function tileInfo(x,y,w,h,passable)
-{
-    let obj = {};
-    obj.x = x;
-    obj.y = y;
-    obj.w = w;
-    obj.h = h;
-    obj.passable = passable;
-    return obj;
-}
-
-function tree(obj,x,y)
-{
-    obj.static.push(returnTile(x,y,7));
-    obj.static.push(returnTile(x+32,y+96,8));
-    obj.static.push(returnTile(x+20,y+126,9));
-}
-
-function platform(obj,x,y,length,type) //object reference , x,ytop left corner  ,   length of platform  , type of platform
-{
-    if (length > 1)
-    {
-        obj.static.push(returnTile(x,y,type));
-        for(let i = 1;i<length-1;i++)
-            obj.static.push(returnTile(x+(i*32),y,type+1));
-        obj.static.push(returnTile(x+((length-1)*32),y,type+2));
-    }
-    else
-        obj.static.push(returnTile(x,y,type+3));    
-}
-
-function ladder(obj,x,y,height,type)
-{
-    if(type == 1)
-        for(let i = 0;i<height;i++)
-        {
-            obj.static.push(returnTile(x,y+(i*64),40)); //ladder visual
-            obj.static.push(returnTile(x+16,y+16+(i*64),41)); //ladder climbable
-        }
-    if(type == 2)
-        for(let i = 0;i<height;i++)
-        {
-            obj.static.push(returnTile(x,y+(i*32),42)); //ladder visual
-            if(i%2 == 0)
-                obj.static.push(returnTile(x+16,y+16+(i*32),41)); //ladder climbable
-        }
 }
