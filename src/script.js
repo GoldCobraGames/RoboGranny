@@ -70,8 +70,8 @@ function mainMenu() //main menu loop generates new character and map upon ending
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
-            //nextLevel(0,50,920);
-            nextLevel(4,880,30);
+            nextLevel(0,50,920);
+            //nextLevel(4,880,30);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)

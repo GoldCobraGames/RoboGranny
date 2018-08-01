@@ -8,7 +8,7 @@ function createCharacter() //generates and contains game character
     
     obj.jump1 = false;
     obj.jump2 = false;
-    obj.jumpPowerup = true;
+    obj.jumpPowerup = false;
     obj.jumpTap = false;
         
     obj.dashPowerup = false;
@@ -28,7 +28,7 @@ function createCharacter() //generates and contains game character
     obj.dead = false;
 
     obj.projectiles = [];
-    obj.projectilePowerup = true;
+    obj.projectilePowerup = false;
     obj.projectileTap = false;
     
     obj.iFrames = 0;
