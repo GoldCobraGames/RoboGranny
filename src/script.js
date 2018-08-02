@@ -70,8 +70,8 @@ function mainMenu() //main menu loop generates new character and map upon ending
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
-            nextLevel(0,50,920);
-            //nextLevel(4,880,30);
+            //nextLevel(0,50,920);
+            nextLevel(0,50,130);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
@@ -83,14 +83,31 @@ function mainMenu() //main menu loop generates new character and map upon ending
         }
         else
         {
+            if(character.jumpPoweup)
+                camera.coordinates[0]-=0.5;
+            else
+                camera.coordinates[0]+=0.5;
+            if(camera.coordinates[0] >= currentRoom.maxCamera[0]-601 || camera.coordinates[0] <= 1)
+                character.jumpPoweup = !character.jumpPoweup;
             drawBackground();
             onScreenSurface.drawImage(menu1Image,80,170);
-            onScreenSurface.drawImage(menu2Image,250,345);
+            onScreenSurface.strokeStyle = '#0f2560';
+            onScreenSurface.fillStyle = '#0f2560';
+            onScreenSurface.lineJoin = "round";
+            onScreenSurface.lineWidth = 30;
+            onScreenSurface.strokeRect(250, 350,140,70);
+            onScreenSurface.strokeStyle = '#ffca57';
+            onScreenSurface.lineWidth = 3;
+            onScreenSurface.strokeRect(250, 350,140,70);
+            onScreenSurface.fillRect(250, 350,140,70);
+            onScreenSurface.fillStyle = '#ffca57';
+            onScreenSurface.font = "italic 20px Lucida Console";
+            onScreenSurface.fillText("Start Game",275,375);
+            onScreenSurface.fillText("Instructions",275,405);
             if(Math.floor(waitTimer/30)%2)
             {
                 onScreenSurface.beginPath();
-                onScreenSurface.fillStyle = "orange";
-                onScreenSurface.arc(240, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
+                onScreenSurface.arc(260, 365+(menuCursor*30), 3, 0, 2 * Math.PI, false);
                 onScreenSurface.fill();
             }
             if(keysPressed.includes(38))//up
@@ -350,18 +367,18 @@ function messageSystem(message) //generates and displays message
     for(let i =0;i<=Math.ceil(message.length/25);i++)
         lines[i] = message.substring(i*25-25,i*25);
     waitTimer = 60;
-    onScreenSurface.strokeStyle = 'white';
+    onScreenSurface.strokeStyle = '#ffca57';
     onScreenSurface.lineJoin = "round";
     onScreenSurface.lineWidth = 20;
-    onScreenSurface.strokeRect(206, 301-(lines.length*6), 236, (lines.length*12)-14);
-    onScreenSurface.strokeStyle = 'black';
-    onScreenSurface.fillStyle = 'black';
-    onScreenSurface.strokeRect(208, 303-(lines.length*6), 232, (lines.length*12)-18);
-    onScreenSurface.fillRect(208,303-(lines.length*6), 232, (lines.length*12)-18);
-    onScreenSurface.fillStyle = 'white';
-	onScreenSurface.font = "15px Courier New";
+    onScreenSurface.strokeRect(206, 301-(lines.length*7), 190, (lines.length*14)-14);
+    onScreenSurface.strokeStyle = '#0f2560';
+    onScreenSurface.fillStyle = '#0f2560';
+    onScreenSurface.strokeRect(208, 303-(lines.length*7), 186, (lines.length*14)-18);
+    onScreenSurface.fillRect(208,303-(lines.length*7), 186, (lines.length*14)-18);
+    onScreenSurface.fillStyle = '#ffca57';
+	onScreenSurface.font = "italic 15px Lucida Console";
     for(let i = 0;i<lines.length;i++)
-        onScreenSurface.fillText(lines[i],205, 300 -(lines.length*6)+(12*i));
+        onScreenSurface.fillText(lines[i],225, 300 -(lines.length*7)+(14*i));
 }
 
 function waitMessage() //pauses game till message is recived
