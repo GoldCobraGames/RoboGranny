@@ -84,22 +84,13 @@ function mainMenu() //main menu loop generates new character and map upon ending
         else
         {
             drawBackground();
-            onScreenSurface.strokeStyle = '#091534';
-            onScreenSurface.lineJoin = "round";
-            onScreenSurface.lineWidth = 30;
-            onScreenSurface.strokeRect(135,220,300,200);
-            onScreenSurface.fillStyle = '#678FFE';
-            onScreenSurface.fillRect(135,220,300,200);
-            onScreenSurface.fillStyle = '#091534';
-            onScreenSurface.font = "bold 30px Palatino Linotype";
-            onScreenSurface.fillText("Adventure Quest", 170, 260);
-            onScreenSurface.font = "italic 15px Palatino Linotype";
-            onScreenSurface.fillText("Start", 240, 360);
-            onScreenSurface.fillText("Instructions", 240, 390);
+            onScreenSurface.drawImage(menu1Image,80,170);
+            onScreenSurface.drawImage(menu2Image,250,345);
             if(Math.floor(waitTimer/30)%2)
             {
                 onScreenSurface.beginPath();
-                onScreenSurface.arc(230, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
+                onScreenSurface.fillStyle = "orange";
+                onScreenSurface.arc(240, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
                 onScreenSurface.fill();
             }
             if(keysPressed.includes(38))//up
