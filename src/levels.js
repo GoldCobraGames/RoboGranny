@@ -450,7 +450,7 @@ function level4() {
     obj.static.push(returnTile(835,770,35)); //enemy blocker
     obj.static.push(returnTile(177,770,35)); // enemy blocker
 
-    obj.active.push(boss(300,448));
+    obj.active.push(boss(125,448));
     messageSystem("        FINAL FIGHT             NO GOING BACK");//BOSS FIGHT
     obj.active.push(door(995, 60, 10, 100, 3, 15, 1522)); //door to level 4
     return obj;

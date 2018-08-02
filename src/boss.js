@@ -68,9 +68,9 @@ function boss(x,y)
         if(this.animationTimer%60 == 0)
             this.turnToPlayer();
         if(this.flipped && this.coordinates[0] > 120)
-            this.coordinates[0] -=0.5;
+            this.coordinates[0] -=0.75;
         else if (!this.flipped && this.coordinates[0] < 552)
-            this.coordinates[0] +=0.5;
+            this.coordinates[0] +=0.75;
         if(this.animationTimer >= 500)
             this.chooseNewState();
     };
