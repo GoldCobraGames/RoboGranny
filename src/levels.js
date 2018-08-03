@@ -293,7 +293,6 @@ function level2()
     obj.active.push(rotatingFire(786-256,508,6,134,7));
     obj.active.push(rotatingFire(418,173,8,145,-9));
     obj.active.push(rotatingFire(786,754,8,65,12));
-
     for(let i = 0;i<14;i++)
         obj.active.push(fallingPlatform(170+(i*32),330,30,2));
 
@@ -334,9 +333,7 @@ function level3() {
     cave(obj, -3, 1450, 18, 1);
     cave(obj, -3, 1568, 18, 1);
     fill(obj, -3, 1600, 18, 4, 21);
-    
     ground(obj, 900, 785, 10);
-
     castle(obj, 20, 958, 7, 5);
     castle(obj, 20, 40, 7, 2);
     castle(obj, 64, 200, 4, 2);
@@ -368,7 +365,6 @@ function level3() {
     obj.active.push(rotatingFire(350,500,5,120,12));
     obj.active.push(rotatingFire(350,500,5,240,12));
     obj.active.push(rotatingFire(350,500,5,360,12));
-
     castle(obj, 0, 960, 17, 5);
 
     platform(obj, 468, 350, 8, 17);

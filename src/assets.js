@@ -35,7 +35,6 @@ let explosionImage = new Image();//used for explosions when character projectile
 let caveImage = new Image();//used for explosions when character projectiles die
 let bossImage = new Image();//boss
 let menu1Image = new Image();//title
-
 explosionImage.src = "data/explosion.png";
 powerUpImage.src = "data/spriteSheet.png";
 heartImage.src = "data/hearts.png";
