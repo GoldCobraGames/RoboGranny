@@ -66,38 +66,59 @@ function mainMenu() //main menu loop generates new character and map upon ending
         waitTimer--;
         if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 0)
         {
+            HealSFX.play();
             StartSFX.play();	
             setTimeout(function(){LevelTheme.play();},2200);	
             character = createCharacter();
             nextLevel(0,50,920);
-            //nextLevel(0,50,120);
             window.requestAnimationFrame(gameLoop);
         }
         else if(keysPressed.includes(13) && waitTimer< 5 && menuCursor == 1)
         {
+            HealSFX.play();
             messageSystem(" Welcome to The Tutorial -------------------------  Move your character    left and right with the         arrow keys                                   Jump with the up arrow                          The character hp is shown    in the top left                                 collect floating icons  for powerups and health ------------------------- Press Enter to Continue");
             window.requestAnimationFrame(mainMenu);
 
         }
         else
         {
+            if(character.jumpPoweup)
+                camera.coordinates[0]-=0.5;
+            else
+                camera.coordinates[0]+=0.5;
+            if(camera.coordinates[0] >= currentRoom.maxCamera[0]-601 || camera.coordinates[0] <= 1)
+                character.jumpPoweup = !character.jumpPoweup;
             drawBackground();
-            onScreenSurface.fillStyle = 'white';
-            onScreenSurface.font = "bold 30px Courier New";
-            onScreenSurface.fillText("Adventure Quest", 150, 260);
-            onScreenSurface.font = "italic 15px Courier New";
-            onScreenSurface.fillText("Start", 250, 360);
-            onScreenSurface.fillText("Instructions", 250, 390);
+            onScreenSurface.drawImage(menu1Image,80,170);
+            onScreenSurface.strokeStyle = '#0f2560';
+            onScreenSurface.fillStyle = '#0f2560';
+            onScreenSurface.lineJoin = "round";
+            onScreenSurface.lineWidth = 30;
+            onScreenSurface.strokeRect(250, 350,140,70);
+            onScreenSurface.strokeStyle = '#ffca57';
+            onScreenSurface.lineWidth = 3;
+            onScreenSurface.strokeRect(250, 350,140,70);
+            onScreenSurface.fillRect(250, 350,140,70);
+            onScreenSurface.fillStyle = '#ffca57';
+            onScreenSurface.font = "italic 20px Lucida Console";
+            onScreenSurface.fillText("Start Game",275,375);
+            onScreenSurface.fillText("Instructions",275,405);
             if(Math.floor(waitTimer/30)%2)
             {
                 onScreenSurface.beginPath();
-                onScreenSurface.arc(240, 355+(menuCursor*30), 3, 0, 2 * Math.PI, false);
+                onScreenSurface.arc(260, 365+(menuCursor*30), 3, 0, 2 * Math.PI, false);
                 onScreenSurface.fill();
             }
             if(keysPressed.includes(38))//up
+            {
                 menuCursor--;
+                JumpSFX.play();
+            }
             else if (keysPressed.includes(40))
+            {
                 menuCursor++;
+                JumpSFX.play();
+            }
             if(menuCursor<0)
                 menuCursor =0;
             if(menuCursor>1)
@@ -133,8 +154,8 @@ function gameLoop() //main control loop
 function render() //clears screen and draws all elements in turn
 {
     drawBackground();
-    drawUi();
     drawMain();
+    drawUi();
 }
 
 function generateBackground()// draws background layer should only be called during screen transitions
@@ -147,12 +168,6 @@ function generateBackground()// draws background layer should only be called dur
             tileList[currentRoom.static[i].tileNum].w,tileList[currentRoom.static[i].tileNum].h,
             currentRoom.static[i].x,currentRoom.static[i].y,
             tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
-        /*if(tileList[currentRoom.static[i].tileNum].passable == -1)
-            {
-                offScreenSurface.fillStyle = 'green';
-                offScreenSurface.fillRect(currentRoom.static[i].x,currentRoom.static[i].y,
-                tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
-            }//shows enemy blockers*/
     }
 }
 
@@ -298,18 +313,11 @@ function nextLevel(goto,x,y) //loads specified level at specified coordinates al
     currentRoom = generateRoomMap(goto);
     character.coordinates[0] = x;
     character.coordinates[1] = y;
-    character.respawnLocation = [character.coordinates[0],character.coordinates[1]];
+    character.respawnLocation[0] = character.coordinates[0];
+    character.respawnLocation[1] = character.coordinates[1];
     character.moveVector[0] = 0;
     character.moveVector[1] = 0;
-    camera.coordinates = [character.coordinates[0],character.coordinates[1]];
-    if(camera.coordinates[0]<0)
-        camera.coordinates[0] = 1;
-    if(camera.coordinates[0]>currentRoom.maxCamera[0]-600)
-        camera.coordinates[0] = currentRoom.maxCamera[0]-600;
-    if(camera.coordinates[1]<0)
-        camera.coordinates[1] = 1;
-    if(camera.coordinates[1]>currentRoom.maxCamera[1]-600)
-        camera.coordinates[1] = currentRoom.maxCamera[1]-600;
+    camera.snap(character.coordinates[0]-300,character.coordinates[1]-300);
     generateBackground();
 }
 
@@ -320,14 +328,28 @@ function createCamera() // camera object behaves diferently from all other objec
 	obj.tick = function ()
 	{
 		if(character.coordinates[0]-this.coordinates[0] > 300 && this.coordinates[0] < currentRoom.maxCamera[0]-599)
-			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);
+			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/50);
 		if(character.coordinates[0]-this.coordinates[0] < 300 && this.coordinates[0] > 1)
-			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/100);		
+			this.coordinates[0] += Math.ceil((character.coordinates[0]-this.coordinates[0]-300)/50);		
 		if(character.coordinates[1]-this.coordinates[1] > 300 && this.coordinates[1] < currentRoom.maxCamera[1]-599)
-			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
+			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/50);
 		if(character.coordinates[1]-this.coordinates[1] < 300 && this.coordinates[1] > 1)
-			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/100);
+			this.coordinates[1] += Math.ceil((character.coordinates[1]-this.coordinates[1]-300)/50);
 	};
+    obj.snap = function (x,y)
+	{
+        camera.coordinates[0] = x;
+        camera.coordinates[1] = y;
+        if(camera.coordinates[0]<0)
+            camera.coordinates[0] = 1;
+        if(camera.coordinates[0]>currentRoom.maxCamera[0]-600)
+            camera.coordinates[0] = currentRoom.maxCamera[0]-600;
+        if(camera.coordinates[1]<0)
+            camera.coordinates[1] = 1;
+        if(camera.coordinates[1]>currentRoom.maxCamera[1]-600)
+            camera.coordinates[1] = currentRoom.maxCamera[1]-600;
+	};
+
 	return obj;
 }
 
@@ -338,18 +360,18 @@ function messageSystem(message) //generates and displays message
     for(let i =0;i<=Math.ceil(message.length/25);i++)
         lines[i] = message.substring(i*25-25,i*25);
     waitTimer = 60;
-    onScreenSurface.strokeStyle = 'white';
+    onScreenSurface.strokeStyle = '#ffca57';
     onScreenSurface.lineJoin = "round";
     onScreenSurface.lineWidth = 20;
-    onScreenSurface.strokeRect(206, 301-(lines.length*6), 236, (lines.length*12)-14);
-    onScreenSurface.strokeStyle = 'black';
-    onScreenSurface.fillStyle = 'black';
-    onScreenSurface.strokeRect(208, 303-(lines.length*6), 232, (lines.length*12)-18);
-    onScreenSurface.fillRect(208,303-(lines.length*6), 232, (lines.length*12)-18);
-    onScreenSurface.fillStyle = 'white';
-	onScreenSurface.font = "15px Courier New";
+    onScreenSurface.strokeRect(206, 301-(lines.length*7), 190, (lines.length*14)-14);
+    onScreenSurface.strokeStyle = '#0f2560';
+    onScreenSurface.fillStyle = '#0f2560';
+    onScreenSurface.strokeRect(208, 303-(lines.length*7), 186, (lines.length*14)-18);
+    onScreenSurface.fillRect(208,303-(lines.length*7), 186, (lines.length*14)-18);
+    onScreenSurface.fillStyle = '#ffca57';
+	onScreenSurface.font = "italic 15px Lucida Console";
     for(let i = 0;i<lines.length;i++)
-        onScreenSurface.fillText(lines[i],205, 300 -(lines.length*6)+(12*i));
+        onScreenSurface.fillText(lines[i],225, 300 -(lines.length*7)+(14*i));
 }
 
 function waitMessage() //pauses game till message is recived
