@@ -571,6 +571,7 @@ function bird(x,y)
                 character.bounce(this.coordinates[0]+16,this.coordinates[1]+29)
             }
     };
+    
     obj.draw = function()
     {
         if(!this.dead)
@@ -1099,3 +1100,4 @@ function explosion(x,y)
             Math.floor(this.coordinates[0]-(this.ticks/2)-camera.coordinates[0]),Math.floor(this.coordinates[1]-camera.coordinates[1]),32,32);
     };
     return obj;
+}

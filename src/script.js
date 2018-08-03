@@ -168,6 +168,12 @@ function generateBackground()// draws background layer should only be called dur
             tileList[currentRoom.static[i].tileNum].w,tileList[currentRoom.static[i].tileNum].h,
             currentRoom.static[i].x,currentRoom.static[i].y,
             tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
+        /*if(tileList[currentRoom.static[i].tileNum].passable == -1)
+            {
+                offScreenSurface.fillStyle = 'green';
+                offScreenSurface.fillRect(currentRoom.static[i].x,currentRoom.static[i].y,
+                tileList[currentRoom.static[i].tileNum].w*2,tileList[currentRoom.static[i].tileNum].h*2);
+            }//shows enemy blockers*/
     }
 }
 
