@@ -101,7 +101,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             onScreenSurface.strokeRect(250, 350,140,70);
             onScreenSurface.fillRect(250, 350,140,70);
             onScreenSurface.fillStyle = '#ffca57';
-            onScreenSurface.font = "italic 20px Lucida Console";
+            onScreenSurface.font = "italic 20px Arial";
             onScreenSurface.fillText("Start Game",275,375);
             onScreenSurface.fillText("Instructions",275,405);
             if(Math.floor(waitTimer/30)%2)
@@ -384,7 +384,7 @@ function messageSystem(message) //generates and displays message
     onScreenSurface.strokeRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
     onScreenSurface.fillRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
     onScreenSurface.fillStyle = '#ffca57';
-	onScreenSurface.font = "italic 15px Lucida Console";
+	onScreenSurface.font = "italic 15px Arial";
     for(let i = 0;i<lines.length;i++)
         onScreenSurface.fillText(lines[i],225, 300 -(lines.length*7)+(14*i));
 }
