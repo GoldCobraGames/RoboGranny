@@ -1,0 +1,30 @@
+#main
+{
+    margin: auto;
+    height: 600px;
+    width: 600px;
+    position: relative;
+    border: 5px solid black;
+}
+h1
+{
+    text-align: center;
+    color: cadetblue;
+}
+
+#bg
+{
+    position: absolute;
+    background-color: blue;
+}
+
+@font-face 
+{
+    font-family: 'Lucida Console';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Lucida Console'), local('LucidaConsole-Regular'),
+        url(http://allfont.ru/cache/fonts/lucida-console_e4dbf36e72813249c56c7fc8ca220bbd.woff) format('woff'),
+        url(http://allfont.ru/cache/fonts/lucida-console_e4dbf36e72813249c56c7fc8ca220bbd.ttf) format('truetype');
+}
+font-family: 'Lucida Console', arial;
