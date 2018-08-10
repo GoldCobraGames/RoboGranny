@@ -95,11 +95,11 @@ function mainMenu() //main menu loop generates new character and map upon ending
             onScreenSurface.fillStyle = '#0f2560';
             onScreenSurface.lineJoin = "round";
             onScreenSurface.lineWidth = 30;
-            onScreenSurface.strokeRect(200, 350,240,70);
+            onScreenSurface.strokeRect(250, 350,140,70);
             onScreenSurface.strokeStyle = '#ffca57';
             onScreenSurface.lineWidth = 3;
-            onScreenSurface.strokeRect(200, 350,240,70);
-            onScreenSurface.fillRect(200, 350,240,70);
+            onScreenSurface.strokeRect(250, 350,140,70);
+            onScreenSurface.fillRect(250, 350,140,70);
             onScreenSurface.fillStyle = '#ffca57';
             onScreenSurface.font = "italic 20px Lucida Console";
             onScreenSurface.fillText("Start Game",275,375);
@@ -378,11 +378,11 @@ function messageSystem(message) //generates and displays message
     onScreenSurface.strokeStyle = '#ffca57';
     onScreenSurface.lineJoin = "round";
     onScreenSurface.lineWidth = 20;
-    onScreenSurface.strokeRect(206, 301-(lines.length*7), 270, (lines.length*14)-14);
+    onScreenSurface.strokeRect(206, 301 - (lines.length * 7), 190, (lines.length * 14) - 14);
     onScreenSurface.strokeStyle = '#0f2560';
     onScreenSurface.fillStyle = '#0f2560';
-    onScreenSurface.strokeRect(208, 303-(lines.length*7), 266, (lines.length*14)-18);
-    onScreenSurface.fillRect(208,303-(lines.length*7), 266, (lines.length*14)-18);
+    onScreenSurface.strokeRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
+    onScreenSurface.fillRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
     onScreenSurface.fillStyle = '#ffca57';
 	onScreenSurface.font = "italic 15px Lucida Console";
     for(let i = 0;i<lines.length;i++)
