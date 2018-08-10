@@ -17,3 +17,8 @@ h1
     position: absolute;
     background-color: blue;
 }
+
+@font-face {
+  font-family: 'Lucida Console';
+  src:  url('/fonts/LucidaGrande.ttc') format('tff'),
+}
