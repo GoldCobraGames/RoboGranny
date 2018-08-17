@@ -27,6 +27,7 @@ setTileList();//populates the list with hardcoded tile information
 
 let waitTimer = 60; // prevents main menu from being skipped instantly by holding enter forces 1 second delay
 let menuCursor = 0;
+let menuTimer = 15;
 let messageState = false; // prevents game from updating while messages are displaying on screen 
 
 function keyDownHandler(e) //appends key to array if it is not already present
@@ -100,7 +101,7 @@ function mainMenu() //main menu loop generates new character and map upon ending
             onScreenSurface.strokeRect(250, 350,140,70);
             onScreenSurface.fillRect(250, 350,140,70);
             onScreenSurface.fillStyle = '#ffca57';
-            onScreenSurface.font = "italic 20px Lucida Console";
+            onScreenSurface.font = "italic 20px Arial";
             onScreenSurface.fillText("Start Game",275,375);
             onScreenSurface.fillText("Instructions",275,405);
             if(Math.floor(waitTimer/30)%2)
@@ -109,20 +110,28 @@ function mainMenu() //main menu loop generates new character and map upon ending
                 onScreenSurface.arc(260, 365+(menuCursor*30), 3, 0, 2 * Math.PI, false);
                 onScreenSurface.fill();
             }
-            if(keysPressed.includes(38))//up
-            {
-                menuCursor--;
-                JumpSFX.play();
+            if (menuTimer > 14) {
+                if(keysPressed.includes(38))//up
+                {
+                    menuCursor--;
+                    JumpSFX.play();
+                    menuTimer = 0;
+                    if(menuCursor<0)
+                    menuCursor =1;
+                }
+                else if (keysPressed.includes(40))
+                {
+                    menuCursor++;
+                    JumpSFX.play();
+                    menuTimer = 0;
+                    if(menuCursor>1)
+                    menuCursor =0;
+                }
+            } else if (menuTimer < 15) {
+                menuTimer++;
             }
-            else if (keysPressed.includes(40))
-            {
-                menuCursor++;
-                JumpSFX.play();
-            }
-            if(menuCursor<0)
-                menuCursor =0;
-            if(menuCursor>1)
-                menuCursor =1;
+
+
             window.requestAnimationFrame(mainMenu);
             }
     }
@@ -369,13 +378,13 @@ function messageSystem(message) //generates and displays message
     onScreenSurface.strokeStyle = '#ffca57';
     onScreenSurface.lineJoin = "round";
     onScreenSurface.lineWidth = 20;
-    onScreenSurface.strokeRect(206, 301-(lines.length*7), 190, (lines.length*14)-14);
+    onScreenSurface.strokeRect(206, 301 - (lines.length * 7), 190, (lines.length * 14) - 14);
     onScreenSurface.strokeStyle = '#0f2560';
     onScreenSurface.fillStyle = '#0f2560';
-    onScreenSurface.strokeRect(208, 303-(lines.length*7), 186, (lines.length*14)-18);
-    onScreenSurface.fillRect(208,303-(lines.length*7), 186, (lines.length*14)-18);
+    onScreenSurface.strokeRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
+    onScreenSurface.fillRect(208, 303 - (lines.length * 7), 186, (lines.length * 14) - 18);
     onScreenSurface.fillStyle = '#ffca57';
-	onScreenSurface.font = "italic 15px Lucida Console";
+	onScreenSurface.font = "italic 15px Arial";
     for(let i = 0;i<lines.length;i++)
         onScreenSurface.fillText(lines[i],225, 300 -(lines.length*7)+(14*i));
 }
